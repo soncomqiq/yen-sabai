@@ -7,7 +7,7 @@ import type {
   ShopState,
   User,
 } from "../domain/types";
-import { requireOffice, transitions } from "../domain/rules";
+import { requireOffice, transitions, validateBooking } from "../domain/rules";
 import type { ShopService } from "./interface";
 import { generateSeed } from "./seed";
 
@@ -235,15 +235,67 @@ export class MockShopService implements ShopService {
     order.timeline.push({ status, at: now });
     this.write(state);
   }
-  async saveBooking(_user: User, _draft: BookingDraft): Promise<void> {
-    throw new Error("อยู่ระหว่างเตรียมตารางงาน");
+  async saveBooking(user: User, draft: BookingDraft): Promise<void> {
+    requireOffice(user.role);
+    await this.wait();
+    const state = this.read();
+    if (
+      !state.customers.some((customer) => customer.id === draft.customerId) ||
+      !state.technicians.some((tech) => tech.id === draft.technicianId)
+    )
+      throw new Error("กรุณาเลือกลูกค้าและช่างให้ถูกต้อง");
+    if (!["installation", "cleaning", "repair"].includes(draft.type))
+      throw new Error("ประเภทงานไม่ถูกต้อง");
+    if (
+      draft.orderId &&
+      !state.orders.some(
+        (order) =>
+          order.id === draft.orderId &&
+          order.customerId === draft.customerId &&
+          order.status !== "cancelled",
+      )
+    )
+      throw new Error("คำสั่งซื้อต้องเป็นของลูกค้ารายนี้และยังไม่ยกเลิก");
+    const existing = draft.id
+      ? state.bookings.find((job) => job.id === draft.id)
+      : undefined;
+    if (draft.id && !existing) throw new Error("ไม่พบงานช่าง");
+    validateBooking(draft, state.bookings);
+    const value = {
+      id: existing?.id ?? `JOB-${crypto.randomUUID().slice(0, 8)}`,
+      customerId: draft.customerId,
+      technicianId: draft.technicianId,
+      orderId: draft.orderId || undefined,
+      type: draft.type,
+      start: new Date(draft.start).toISOString(),
+      end: new Date(draft.end).toISOString(),
+      notes: draft.notes.trim().slice(0, 500),
+      status: existing?.status ?? ("scheduled" as const),
+    };
+    if (existing) Object.assign(existing, value);
+    else state.bookings.push(value);
+    this.write(state);
   }
   async transitionBooking(
-    _user: User,
-    _bookingId: string,
-    _status: BookingStatus,
+    user: User,
+    bookingId: string,
+    status: BookingStatus,
   ): Promise<void> {
-    throw new Error("อยู่ระหว่างเตรียมตารางงาน");
+    await this.wait();
+    const state = this.read(),
+      job = state.bookings.find((job) => job.id === bookingId);
+    if (!job) throw new Error("ไม่พบงานช่าง");
+    if (user.role === "technician" && job.technicianId !== user.technicianId)
+      throw new Error("เปลี่ยนสถานะได้เฉพาะงานของตัวเอง");
+    if (
+      !(job.status === "scheduled" && status === "working") &&
+      !(job.status === "working" && status === "done")
+    )
+      throw new Error(
+        "สถานะงานต้องเปลี่ยนจาก นัดแล้ว → กำลังทำ → เสร็จ เท่านั้น",
+      );
+    job.status = status;
+    this.write(state);
   }
   async reset(user: User) {
     if (user.role !== "owner")

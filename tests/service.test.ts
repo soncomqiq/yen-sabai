@@ -1,3 +1,67 @@
+describe("bookings", () => {
+  it("rejects overlapping create and reschedule without changing data", async () => {
+    const state = await service.snapshot(owner),
+      job = state.bookings[0],
+      before = data.get(STORAGE_KEY);
+    await expect(
+      service.saveBooking(owner, { ...job, id: undefined }),
+    ).rejects.toThrow("ช่วงเวลา");
+    expect(data.get(STORAGE_KEY)).toBe(before);
+    await expect(
+      service.saveBooking(owner, {
+        ...state.bookings[4],
+        start: job.start,
+        end: job.end,
+      }),
+    ).rejects.toThrow("ช่วงเวลา");
+    expect(data.get(STORAGE_KEY)).toBe(before);
+    await service.saveBooking(owner, { ...job, notes: "edited self" });
+    expect((await service.snapshot(owner)).bookings[0].notes).toBe(
+      "edited self",
+    );
+  });
+  it("permits adjacent intervals but rejects backwards and cross-day intervals", async () => {
+    const job = (await service.snapshot(owner)).bookings[0];
+    await service.saveBooking(owner, {
+      ...job,
+      id: undefined,
+      start: job.end,
+      end: new Date(new Date(job.end).getTime() + 3600000).toISOString(),
+    });
+    await expect(
+      service.saveBooking(owner, { ...job, end: job.start }),
+    ).rejects.toThrow("เวลาสิ้นสุด");
+    await expect(
+      service.saveBooking(owner, {
+        ...job,
+        end: new Date(new Date(job.end).getTime() + 86400000).toISOString(),
+      }),
+    ).rejects.toThrow("วันเดียวกัน");
+  });
+  it("technicians can advance only their own jobs and cannot reschedule", async () => {
+    const state = await service.snapshot(owner),
+      own = state.bookings.find(
+        (job) => job.technicianId === "tech-1" && job.status === "scheduled",
+      )!,
+      other = state.bookings.find(
+        (job) => job.technicianId === "tech-2" && job.status === "scheduled",
+      )!;
+    await expect(
+      service.transitionBooking(technician, other.id, "working"),
+    ).rejects.toThrow("ตัวเอง");
+    await expect(
+      service.transitionBooking(technician, own.id, "done"),
+    ).rejects.toThrow("สถานะ");
+    await service.transitionBooking(technician, own.id, "working");
+    await service.transitionBooking(technician, own.id, "done");
+    await expect(
+      service.transitionBooking(technician, own.id, "working"),
+    ).rejects.toThrow("สถานะ");
+    await expect(service.saveBooking(technician, own)).rejects.toThrow(
+      "สิทธิ์",
+    );
+  });
+});
 describe("orders", () => {
   it("deducts merged lines, preserves historical prices, restores only once", async () => {
     const product = (await service.snapshot(owner)).products[1];

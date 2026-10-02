@@ -26,6 +26,7 @@ import { isScreenshotMode } from "../domain/rules";
 import { DataProvider } from "./DataProvider";
 import Products from "../pages/Products";
 import Orders from "../pages/Orders";
+import Bookings from "../pages/Bookings";
 
 interface Session {
   user: User;
@@ -376,6 +377,8 @@ export default function BackOffice() {
                           <Products />
                         ) : item.path === "orders" ? (
                           <Orders />
+                        ) : item.path === "bookings" ? (
+                          <Bookings />
                         ) : (
                           <Placeholder title={item.label} />
                         )
