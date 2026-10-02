@@ -85,17 +85,17 @@ client role. PDF and Excel consume authorized read models only.
 
 ## Permission Matrix
 
-| Page / Action | Owner | Admin | Technician |
-| --- | --- | --- | --- |
-| Dashboard operations | Yes | Yes | No |
-| Dashboard sales totals/chart/revenue ranking | Yes | No | No |
-| Products list/prices/edit/stock/export | Yes | Yes | No |
-| Orders list/create/status/prices/export/PDF | Yes | Yes | No |
-| Bookings list | All | All | Own only |
-| Booking create/edit/reschedule | Yes | Yes | No |
-| Booking advance status | All | All | Own only |
-| Customers list/detail/history | Yes | Yes | No |
-| Reset demo | Yes | No | No |
+| Page / Action                                | Owner | Admin | Technician |
+| -------------------------------------------- | ----- | ----- | ---------- |
+| Dashboard operations                         | Yes   | Yes   | No         |
+| Dashboard sales totals/chart/revenue ranking | Yes   | No    | No         |
+| Products list/prices/edit/stock/export       | Yes   | Yes   | No         |
+| Orders list/create/status/prices/export/PDF  | Yes   | Yes   | No         |
+| Bookings list                                | All   | All   | Own only   |
+| Booking create/edit/reschedule               | Yes   | Yes   | No         |
+| Booking advance status                       | All   | All   | Own only   |
+| Customers list/detail/history                | Yes   | Yes   | No         |
+| Reset demo                                   | Yes   | No    | No         |
 
 ## Libraries and UX
 

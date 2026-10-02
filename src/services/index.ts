@@ -1,2 +1,5 @@
-import type { ShopService } from './interface'
-export function createShopService(): ShopService { throw new Error('Mock service implementation will be installed in milestone 2') }
+import type { ShopService } from "./interface";
+import { MockShopService } from "./mock";
+export function createShopService(): ShopService {
+  return new MockShopService(window.localStorage);
+}

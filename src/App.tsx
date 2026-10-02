@@ -1,1 +1,1 @@
-export { default } from './components/BackOffice'
+export { default } from "./components/BackOffice";
