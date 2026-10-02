@@ -25,6 +25,7 @@ import { roleLabels } from "../domain/types";
 import { isScreenshotMode } from "../domain/rules";
 import { DataProvider } from "./DataProvider";
 import Products from "../pages/Products";
+import Orders from "../pages/Orders";
 
 interface Session {
   user: User;
@@ -373,6 +374,8 @@ export default function BackOffice() {
                       element={
                         item.path === "products" ? (
                           <Products />
+                        ) : item.path === "orders" ? (
+                          <Orders />
                         ) : (
                           <Placeholder title={item.label} />
                         )

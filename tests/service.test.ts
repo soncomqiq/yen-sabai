@@ -1,3 +1,67 @@
+describe("orders", () => {
+  it("deducts merged lines, preserves historical prices, restores only once", async () => {
+    const product = (await service.snapshot(owner)).products[1];
+    const id = await service.createOrder(owner, {
+      customerId: "customer-1",
+      items: [
+        { productId: product.id, quantity: 1 },
+        { productId: product.id, quantity: 2 },
+      ],
+    });
+    let state = await service.snapshot(owner);
+    expect(state.products[1].stock).toBe(product.stock - 3);
+    expect(state.orders[0].items).toHaveLength(1);
+    await service.saveProduct(owner, { ...product, price: 999 });
+    expect((await service.snapshot(owner)).orders[0].items[0].unitPrice).toBe(
+      product.price,
+    );
+    await service.transitionOrder(owner, id, "cancelled");
+    state = await service.snapshot(owner);
+    expect(state.products[1].stock).toBe(product.stock);
+    const before = data.get(STORAGE_KEY);
+    await expect(
+      service.transitionOrder(owner, id, "cancelled"),
+    ).rejects.toThrow("สถานะ");
+    expect(data.get(STORAGE_KEY)).toBe(before);
+  });
+  it("validates all lines before deduction and blocks negative quantities", async () => {
+    const state = await service.snapshot(owner),
+      before = data.get(STORAGE_KEY);
+    await expect(
+      service.createOrder(owner, {
+        customerId: "customer-1",
+        items: [
+          { productId: "product-2", quantity: 1 },
+          { productId: "product-1", quantity: state.products[0].stock + 1 },
+        ],
+      }),
+    ).rejects.toThrow("ไม่เพียงพอ");
+    expect(data.get(STORAGE_KEY)).toBe(before);
+    await expect(
+      service.createOrder(owner, {
+        customerId: "customer-1",
+        items: [{ productId: "product-1", quantity: -1 }],
+      }),
+    ).rejects.toThrow("จำนวน");
+  });
+  it("only advances permitted transitions and denies technician orders", async () => {
+    const id = await service.createOrder(owner, {
+      customerId: "customer-1",
+      items: [{ productId: "product-2", quantity: 1 }],
+    });
+    await expect(
+      service.transitionOrder(owner, id, "completed"),
+    ).rejects.toThrow("ลำดับ");
+    for (const status of ["paid", "fulfillment", "completed"] as const)
+      await service.transitionOrder(owner, id, status);
+    await expect(
+      service.transitionOrder(owner, id, "cancelled"),
+    ).rejects.toThrow("สถานะ");
+    await expect(
+      service.createOrder(technician, { customerId: "customer-1", items: [] }),
+    ).rejects.toThrow("สิทธิ์");
+  });
+});
 import { beforeEach, describe, expect, it } from "vitest";
 import { MockShopService, STORAGE_KEY } from "../src/services/mock";
 import { generateSeed } from "../src/services/seed";

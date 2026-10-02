@@ -7,7 +7,7 @@ import type {
   ShopState,
   User,
 } from "../domain/types";
-import { requireOffice } from "../domain/rules";
+import { requireOffice, transitions } from "../domain/rules";
 import type { ShopService } from "./interface";
 import { generateSeed } from "./seed";
 
@@ -143,15 +143,97 @@ export class MockShopService implements ShopService {
     });
     this.write(state);
   }
-  async createOrder(_user: User, _draft: OrderDraft): Promise<string> {
-    throw new Error("อยู่ระหว่างเตรียมคำสั่งซื้อ");
+  async createOrder(user: User, draft: OrderDraft): Promise<string> {
+    requireOffice(user.role);
+    await this.wait();
+    const state = this.read();
+    if (!state.customers.some((customer) => customer.id === draft.customerId))
+      throw new Error("กรุณาเลือกลูกค้า");
+    if (!draft.items.length) throw new Error("เพิ่มสินค้าอย่างน้อยหนึ่งรายการ");
+    const quantities = new Map<string, number>();
+    draft.items.forEach((item) => {
+      if (!Number.isInteger(item.quantity) || item.quantity < 1)
+        throw new Error("จำนวนสินค้าต้องเป็นจำนวนเต็มมากกว่าศูนย์");
+      quantities.set(
+        item.productId,
+        (quantities.get(item.productId) ?? 0) + item.quantity,
+      );
+    });
+    const items = [...quantities].map(([productId, quantity]) => {
+      const product = state.products.find(
+        (product) => product.id === productId,
+      );
+      if (!product) throw new Error("ไม่พบสินค้าที่เลือก");
+      if (product.stock < quantity)
+        throw new Error(
+          `${product.name} เหลือ ${product.stock} ${product.unit} ไม่เพียงพอสำหรับ ${quantity} ${product.unit}`,
+        );
+      return {
+        productId,
+        quantity,
+        name: product.name,
+        unitPrice: product.price,
+      };
+    });
+    const id = `YS-${String(Math.max(0, ...state.orders.map((order) => Number(order.id.split("-")[1]) || 0)) + 1).padStart(4, "0")}`,
+      now = new Date().toISOString();
+    items.forEach((item) => {
+      state.products.find((product) => product.id === item.productId)!.stock -=
+        item.quantity;
+      state.movements.unshift({
+        id: crypto.randomUUID(),
+        productId: item.productId,
+        delta: -item.quantity,
+        reason: "ขายสินค้า",
+        orderId: id,
+        createdAt: now,
+      });
+    });
+    state.orders.unshift({
+      id,
+      customerId: draft.customerId,
+      createdAt: now,
+      status: "pending",
+      items,
+      timeline: [{ status: "pending", at: now }],
+    });
+    this.write(state);
+    return id;
   }
   async transitionOrder(
-    _user: User,
-    _orderId: string,
-    _status: OrderStatus,
+    user: User,
+    orderId: string,
+    status: OrderStatus,
   ): Promise<void> {
-    throw new Error("อยู่ระหว่างเตรียมคำสั่งซื้อ");
+    requireOffice(user.role);
+    await this.wait();
+    const state = this.read(),
+      order = state.orders.find((order) => order.id === orderId);
+    if (!order) throw new Error("ไม่พบคำสั่งซื้อ");
+    if (!transitions[order.status].includes(status))
+      throw new Error(
+        "ไม่สามารถเปลี่ยนสถานะนี้ได้ ต้องทำตามลำดับและห้ามเปลี่ยนรายการที่สำเร็จหรือยกเลิกแล้ว",
+      );
+    const now = new Date().toISOString();
+    if (status === "cancelled")
+      order.items.forEach((item) => {
+        const product = state.products.find(
+          (product) => product.id === item.productId,
+        );
+        if (!product) throw new Error("ไม่พบสินค้าสำหรับคืนสต็อก");
+        product.stock += item.quantity;
+        state.movements.unshift({
+          id: crypto.randomUUID(),
+          productId: product.id,
+          delta: item.quantity,
+          reason: "คืนจากยกเลิกคำสั่งซื้อ",
+          orderId,
+          createdAt: now,
+        });
+      });
+    order.status = status;
+    order.timeline.push({ status, at: now });
+    this.write(state);
   }
   async saveBooking(_user: User, _draft: BookingDraft): Promise<void> {
     throw new Error("อยู่ระหว่างเตรียมตารางงาน");
