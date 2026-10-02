@@ -28,6 +28,8 @@ import Products from "../pages/Products";
 import Orders from "../pages/Orders";
 import Bookings from "../pages/Bookings";
 import Dashboard from "../pages/Dashboard";
+import Customers from "../pages/Customers";
+import { canAccessPage } from "../domain/permissions";
 
 interface Session {
   user: User;
@@ -211,10 +213,7 @@ function Shell({ children }: { children: ReactNode }) {
           <p className="nav-caption">จัดการร้าน</p>
           <nav>
             {navItems
-              .filter(
-                (item) =>
-                  user.role !== "technician" || item.path === "bookings",
-              )
+              .filter((item) => canAccessPage(user.role, item.path))
               .map((item) => (
                 <NavLink
                   key={item.path}
@@ -365,10 +364,7 @@ export default function BackOffice() {
             <DataProvider key={user.role} user={user}>
               <Routes>
                 {navItems
-                  .filter(
-                    (item) =>
-                      user.role !== "technician" || item.path === "bookings",
-                  )
+                  .filter((item) => canAccessPage(user.role, item.path))
                   .map((item) => (
                     <Route
                       key={item.path}
@@ -382,6 +378,8 @@ export default function BackOffice() {
                           <Orders />
                         ) : item.path === "bookings" ? (
                           <Bookings />
+                        ) : item.path === "customers" ? (
+                          <Customers />
                         ) : (
                           <Placeholder title={item.label} />
                         )

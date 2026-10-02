@@ -130,6 +130,25 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { MockShopService, STORAGE_KEY } from "../src/services/mock";
 import { generateSeed } from "../src/services/seed";
 import { dashboardMetrics } from "../src/domain/dashboard";
+import { canAccessPage, canSeeDashboardSales } from "../src/domain/permissions";
+describe("permission matrix", () => {
+  it("restricts technician routes and owner dashboard money", () => {
+    for (const page of [
+      "dashboard",
+      "products",
+      "orders",
+      "bookings",
+      "customers",
+    ]) {
+      expect(canAccessPage("owner", page)).toBe(true);
+      expect(canAccessPage("admin", page)).toBe(true);
+      expect(canAccessPage("technician", page)).toBe(page === "bookings");
+    }
+    expect(canSeeDashboardSales("owner")).toBe(true);
+    expect(canSeeDashboardSales("admin")).toBe(false);
+    expect(canSeeDashboardSales("technician")).toBe(false);
+  });
+});
 describe("dashboard", () => {
   it("recognizes paid orders only and always emits six months", () => {
     const state = generateSeed(new Date("2026-06-18T10:00:00")),

@@ -16,6 +16,7 @@ import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { orderLabels, bookingLabels, bookingTypeLabels } from "../domain/types";
 import { dashboardMetrics } from "../domain/dashboard";
+import { canSeeDashboardSales } from "../domain/permissions";
 import { money, dateText, number } from "../lib/format";
 import { OrderDetail } from "./Orders";
 import { BookingDetail } from "./Bookings";
@@ -27,7 +28,7 @@ export default function Dashboard() {
     [job, setJob] = useState<string | null>(null),
     [reset, setReset] = useState(false);
   if (!state) return <Skeleton />;
-  const owner = user.role === "owner",
+  const owner = canSeeDashboardSales(user.role),
     metrics = dashboardMetrics(state),
     max = Math.max(1, ...metrics.months.map((month) => month.total)),
     scale = Math.ceil(max / 100000) * 100000;
