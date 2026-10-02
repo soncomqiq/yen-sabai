@@ -129,6 +129,36 @@ describe("orders", () => {
 import { beforeEach, describe, expect, it } from "vitest";
 import { MockShopService, STORAGE_KEY } from "../src/services/mock";
 import { generateSeed } from "../src/services/seed";
+import { dashboardMetrics } from "../src/domain/dashboard";
+describe("dashboard", () => {
+  it("recognizes paid orders only and always emits six months", () => {
+    const state = generateSeed(new Date("2026-06-18T10:00:00")),
+      metrics = dashboardMetrics(state, new Date("2026-06-18T10:00:00"));
+    expect(metrics.months).toHaveLength(6);
+    const expected = state.orders
+      .filter(
+        (order) =>
+          new Date(order.createdAt).toDateString() ===
+            new Date("2026-06-18T10:00:00").toDateString() &&
+          ["paid", "fulfillment", "completed"].includes(order.status),
+      )
+      .reduce(
+        (total, order) =>
+          total +
+          order.items.reduce(
+            (sum, item) => sum + item.unitPrice * item.quantity,
+            0,
+          ),
+        0,
+      );
+    expect(metrics.todaySales).toBe(expected);
+    expect(
+      metrics.awaiting.every(
+        (order) => !["completed", "cancelled"].includes(order.status),
+      ),
+    ).toBe(true);
+  });
+});
 import { isScreenshotMode, validateBooking } from "../src/domain/rules";
 import type { User } from "../src/domain/types";
 const owner: User = { id: "owner", name: "Owner", role: "owner" };

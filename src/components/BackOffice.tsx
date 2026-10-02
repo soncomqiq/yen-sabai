@@ -27,6 +27,7 @@ import { DataProvider } from "./DataProvider";
 import Products from "../pages/Products";
 import Orders from "../pages/Orders";
 import Bookings from "../pages/Bookings";
+import Dashboard from "../pages/Dashboard";
 
 interface Session {
   user: User;
@@ -373,7 +374,9 @@ export default function BackOffice() {
                       key={item.path}
                       path={`/${item.path}`}
                       element={
-                        item.path === "products" ? (
+                        item.path === "dashboard" ? (
+                          <Dashboard />
+                        ) : item.path === "products" ? (
                           <Products />
                         ) : item.path === "orders" ? (
                           <Orders />
