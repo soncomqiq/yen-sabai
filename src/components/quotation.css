@@ -1,0 +1,51 @@
+.quotation-action {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.quotation-action button {
+  font-size: 12px;
+}
+.quotation-pages {
+  display: grid;
+  gap: 18px;
+  padding: 16px;
+  background: #eef2ef;
+  border-radius: 5px;
+}
+.quotation-preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #dce5df;
+  box-shadow: 0 2px 10px #1f3a2510;
+}
+.pdf-loading {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #88a391;
+  font-size: 13px;
+}
+.pdf-loading svg {
+  animation: pdf-spin 1s linear infinite;
+}
+@keyframes pdf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 700px) {
+  .quotation-pages {
+    padding: 7px;
+  }
+  .quotation-action button {
+    width: 100%;
+  }
+  .pdf-loading {
+    min-height: 220px;
+    font-size: 11px;
+  }
+}

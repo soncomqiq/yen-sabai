@@ -19,6 +19,8 @@ import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { dateText, money } from "../lib/format";
 import { exportExcel } from "../lib/excel";
+import { QuotationDialog } from "../components/QuotationDialog";
+import "./orders.css";
 
 export default function Orders() {
   const { state, notify } = useShop();
@@ -191,7 +193,7 @@ export default function Orders() {
         {filtered.length ? (
           <>
             <div className="table-scroll">
-              <table>
+              <table className="orders-table">
                 <thead>
                   <tr>
                     <th>เลขที่คำสั่งซื้อ</th>
@@ -358,6 +360,7 @@ function OrderForm({
           ลูกค้า
           <select
             required
+            aria-label="ลูกค้า"
             value={customer}
             onChange={(event) => setCustomer(event.target.value)}
           >
@@ -491,7 +494,8 @@ export function OrderDetail({
   onClose: () => void;
 }) {
   const { state, user, service, busy, run } = useShop(),
-    [cancel, setCancel] = useState(false);
+    [cancel, setCancel] = useState(false),
+    [quotation, setQuotation] = useState(false);
   const order = state!.orders.find((order) => order.id === orderId)!,
     customer = state!.customers.find(
       (customer) => customer.id === order.customerId,
@@ -523,6 +527,12 @@ export function OrderDetail({
               {dateText(order.createdAt, "d MMM yyyy HH:mm")}
             </p>
           </div>
+        </div>
+        <div className="quotation-action">
+          <button className="secondary" onClick={() => setQuotation(true)}>
+            <Download size={16} />
+            ใบเสนอราคา PDF
+          </button>
         </div>
         <ol className="timeline">
           {steps.map((step, index) => {
@@ -602,6 +612,13 @@ export function OrderDetail({
             ))}
         </div>
       </Modal>
+      {quotation && (
+        <QuotationDialog
+          order={order}
+          customer={customer}
+          onClose={() => setQuotation(false)}
+        />
+      )}
       {cancel && (
         <Modal
           title="ยกเลิกคำสั่งซื้อ?"

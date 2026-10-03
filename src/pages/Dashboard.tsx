@@ -24,19 +24,20 @@ import "./dashboard.css";
 
 export default function Dashboard() {
   const { state, user, service, run, busy } = useShop();
+  const [today] = useState(() => new Date());
   const [order, setOrder] = useState<string | null>(null),
     [job, setJob] = useState<string | null>(null),
     [reset, setReset] = useState(false);
   if (!state) return <Skeleton />;
   const owner = canSeeDashboardSales(user.role),
-    metrics = dashboardMetrics(state),
+    metrics = dashboardMetrics(state, today),
     max = Math.max(1, ...metrics.months.map((month) => month.total)),
     scale = Math.ceil(max / 100000) * 100000;
   return (
     <>
       <PageHeading
         title={`สวัสดี, ${user.name}`}
-        subtitle={`${dateText(new Date(), "EEEE d MMMM yyyy")} · ภาพรวมร้านวันนี้`}
+        subtitle={`${dateText(today, "EEEE d MMMM yyyy")} · ภาพรวมร้านวันนี้`}
         actions={
           <>
             <Link className="secondary" to="/bookings">
@@ -77,7 +78,7 @@ export default function Dashboard() {
                 <p>ยอดขายเดือนนี้</p>
                 <strong>{money(metrics.months[5].total)}</strong>
                 <small className="stat-foot">
-                  {dateText(new Date(), "MMMM yyyy")}
+                  {dateText(today, "MMMM yyyy")}
                 </small>
               </div>
             </div>
@@ -371,7 +372,7 @@ export default function Dashboard() {
           </div>
           {metrics.awaiting.length ? (
             <div className="table-scroll">
-              <table>
+              <table className="awaiting-table">
                 <thead>
                   <tr>
                     <th>เลขที่</th>

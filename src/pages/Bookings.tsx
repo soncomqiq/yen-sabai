@@ -39,7 +39,8 @@ interface NewJob {
 }
 export default function Bookings() {
   const { state, user } = useShop();
-  const [date, setDate] = useState(startOfDay(new Date())),
+  const [today] = useState(() => new Date());
+  const [date, setDate] = useState(() => startOfDay(new Date())),
     [mode, setMode] = useState<"week" | "day">("week"),
     [status, setStatus] = useState("all"),
     [detail, setDetail] = useState<string | null>(null),
@@ -212,14 +213,14 @@ export default function Bookings() {
             {mode === "week" ? (
               days.map((day) => (
                 <div
-                  className={`calendar-week-row ${isSameDay(day, new Date()) ? "is-today" : ""}`}
+                  className={`calendar-week-row ${isSameDay(day, today) ? "is-today" : ""}`}
                   key={day.toISOString()}
                   style={calendarStyle}
                 >
                   <div className="calendar-day-label">
                     <strong>{dateText(day, "d")}</strong>
                     <span>{dateText(day, "EEE")}</span>
-                    {isSameDay(day, new Date()) && <small>วันนี้</small>}
+                    {isSameDay(day, today) && <small>วันนี้</small>}
                   </div>
                   {state.technicians.map((tech) => (
                     <div className="week-cell" key={tech.id}>
@@ -495,6 +496,7 @@ function BookingForm({
           ลูกค้า
           <select
             required
+            aria-label="ลูกค้า"
             value={customer}
             onChange={(event) => {
               setCustomer(event.target.value);
@@ -524,6 +526,7 @@ function BookingForm({
             ช่างผู้รับผิดชอบ
             <select
               name="technician"
+              aria-label="ช่างผู้รับผิดชอบ"
               defaultValue={value.technicianId ?? state!.technicians[0].id}
             >
               {state!.technicians.map((tech) => (

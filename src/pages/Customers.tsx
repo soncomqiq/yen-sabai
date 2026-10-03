@@ -133,7 +133,7 @@ export default function Customers() {
         {filtered.length ? (
           <>
             <div className="table-scroll">
-              <table>
+              <table className="customers-table">
                 <thead>
                   <tr>
                     <th>ลูกค้า</th>

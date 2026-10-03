@@ -111,6 +111,14 @@ client role. PDF and Excel consume authorized read models only.
 
 ## Verification Gates
 
+### Implementation Notes
+
+The two implementation deviations are recorded in DECISIONS.md entries 8 and
+12: Thai PDF pages are rasterized for reliable shaping instead of direct TTF
+embedding, and feature styles are colocated instead of one stylesheet. App.tsx
+remains the entry and delegates shell composition to BackOffice. Service
+interfaces, permissions, routes, persistence and business rules remain as planned.
+
 Every milestone must pass `npm run build` before its named git commit. Focused
 tests cover stock atomicity/cancellation, invalid transitions, permissions,
 overlap/rescheduling, deterministic seed counts, and screenshot query parsing.

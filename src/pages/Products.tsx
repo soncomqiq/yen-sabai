@@ -19,6 +19,7 @@ import { EmptyState, PageHeading, Skeleton } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { money, number, dateText } from "../lib/format";
 import { exportExcel } from "../lib/excel";
+import "./products.css";
 
 export default function Products() {
   const { state, user, service, run, busy, notify } = useShop();
@@ -192,7 +193,7 @@ export default function Products() {
         {products.length ? (
           <>
             <div className="table-scroll">
-              <table>
+              <table className="products-table">
                 <thead>
                   <tr>
                     <th>สินค้า</th>
