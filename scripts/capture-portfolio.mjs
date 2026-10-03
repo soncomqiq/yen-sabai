@@ -78,6 +78,8 @@ try {
     await capture('01-login', 'Login and role selection');
     await login();
     await capture('02-dashboard', 'Owner sales and operations dashboard', true);
+    await page.getByRole('button', { name: 'สรุปยอดขาย', exact: true }).click();
+    await capture('02-sales-report', 'Owner sales report using existing calculations', true);
 
     await route('products');
     await capture('03-products', 'Products and stock management', true);

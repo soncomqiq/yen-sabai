@@ -1,15 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Banknote,
-  ChartNoAxesCombined,
-  ShoppingBag,
-  Wrench,
   ArrowUpRight,
-  AlertTriangle,
-  Users,
   RotateCcw,
-  CalendarDays,
 } from "lucide-react";
 import { useShop } from "../components/DataProvider";
 import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
@@ -25,6 +18,7 @@ import "./dashboard.css";
 export default function Dashboard() {
   const { state, user, service, run, busy } = useShop();
   const [today] = useState(() => new Date());
+  const report = useRef<HTMLDetailsElement>(null);
   const [order, setOrder] = useState<string | null>(null),
     [job, setJob] = useState<string | null>(null),
     [reset, setReset] = useState(false);
@@ -33,17 +27,30 @@ export default function Dashboard() {
     metrics = dashboardMetrics(state, today),
     max = Math.max(1, ...metrics.months.map((month) => month.total)),
     scale = Math.ceil(max / 100000) * 100000;
+  const currentJobs = metrics.todayJobs.filter(job => job.status === 'working' || (job.status === 'scheduled' && new Date(job.start) <= today));
+  const upcomingJobs = metrics.todayJobs.filter(job => job.status === 'scheduled' && new Date(job.start) > today);
+  const completedJobs = metrics.todayJobs.filter(job => job.status === 'done');
+  const renderJob = (item: typeof metrics.todayJobs[number]) => {
+    const customer = state.customers.find(customer => customer.id === item.customerId);
+    const technician = state.technicians.find(tech => tech.id === item.technicianId);
+    return <button className="schedule-row" key={item.id} onClick={() => setJob(item.id)} aria-label={`ดูงาน ${item.id}`}>
+      <span className="schedule-time">{dateText(item.start, 'HH:mm')}<small>{dateText(item.end, 'HH:mm')}</small></span>
+      <span className="schedule-customer"><strong>{customer?.name}</strong><span>{bookingTypeLabels[item.type]}</span></span>
+      <span className="schedule-staff">{technician?.name}</span>
+      <span className={`badge ${item.status}`}>{item.status === 'scheduled' && new Date(item.start) <= today ? 'ถึงเวลานัดแล้ว' : bookingLabels[item.status]}</span>
+    </button>;
+  };
   return (
     <>
       <PageHeading
-        title={`สวัสดี, ${user.name}`}
-        subtitle={`${dateText(today, "EEEE d MMMM yyyy")} · ภาพรวมร้านวันนี้`}
+        title="งานวันนี้"
+        subtitle={dateText(today, "EEEE d MMMM yyyy")}
         actions={
           <>
             <Link className="secondary" to="/bookings">
-              <CalendarDays size={17} />
               ตารางงานช่าง
             </Link>
+            {owner && <button className="secondary" onClick={() => { if (report.current) { report.current.open = true; report.current.scrollIntoView({ block: 'start' }); } }}>สรุปยอดขาย</button>}
             {owner && (
               <button
                 className="icon-button reset-demo"
@@ -57,93 +64,20 @@ export default function Dashboard() {
           </>
         }
       />
-      <div className="stats-grid">
-        {owner ? (
-          <>
-            <div className="stat-card">
-              <span className="stat-icon">
-                <Banknote />
-              </span>
-              <div>
-                <p>ยอดขายวันนี้</p>
-                <strong>{money(metrics.todaySales)}</strong>
-                <small className="stat-foot">ชำระแล้วและส่งมอบ</small>
-              </div>
-            </div>
-            <div className="stat-card">
-              <span className="stat-icon blue">
-                <ChartNoAxesCombined />
-              </span>
-              <div>
-                <p>ยอดขายเดือนนี้</p>
-                <strong>{money(metrics.months[5].total)}</strong>
-                <small className="stat-foot">
-                  {dateText(today, "MMMM yyyy")}
-                </small>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="stat-card">
-              <span className="stat-icon amber">
-                <AlertTriangle />
-              </span>
-              <div>
-                <p>สินค้าถึงจุดสั่งซื้อ</p>
-                <strong>
-                  {metrics.low.length}
-                  <small> รายการ</small>
-                </strong>
-                <small className="stat-foot">ตรวจสอบสต็อกวันนี้</small>
-              </div>
-            </div>
-            <div className="stat-card">
-              <span className="stat-icon blue">
-                <Users />
-              </span>
-              <div>
-                <p>ลูกค้าทั้งหมด</p>
-                <strong>
-                  {state.customers.length}
-                  <small> ราย</small>
-                </strong>
-                <small className="stat-foot">ลูกค้าของร้านเย็นสบาย</small>
-              </div>
-            </div>
-          </>
-        )}
-        <div className="stat-card">
-          <span className="stat-icon amber">
-            <ShoppingBag />
-          </span>
-          <div>
-            <p>คำสั่งซื้อรอดำเนินการ</p>
-            <strong>
-              {metrics.awaiting.length}
-              <small> รายการ</small>
-            </strong>
-            <small className="stat-foot">รอชำระ / ติดตั้ง / จัดส่ง</small>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon">
-            <Wrench />
-          </span>
-          <div>
-            <p>งานช่างวันนี้</p>
-            <strong>
-              {metrics.todayJobs.length}
-              <small> งาน</small>
-            </strong>
-            <small className="stat-foot">
-              เสร็จแล้ว{" "}
-              {metrics.todayJobs.filter((job) => job.status === "done").length}{" "}
-              งาน
-            </small>
-          </div>
-        </div>
+      <div className="workday-layout">
+        <section className="day-schedule" aria-label="ตารางงานวันนี้">
+          <div className="section-heading"><h2>ตารางวันนี้</h2><span className="muted">{metrics.todayJobs.length} งาน</span></div>
+          {metrics.todayJobs.length === 0 ? <EmptyState title="ไม่มีนัดหมายวันนี้" detail="เลือกวันอื่นในตารางงานช่างเพื่อดูนัดหมาย" action={<Link className="secondary" to="/bookings">ดูตารางงาน</Link>} /> : <>
+            {currentJobs.length > 0 && <div className="schedule-group"><h3>กำลังทำและถึงเวลานัด</h3>{currentJobs.map(renderJob)}</div>}
+            {upcomingJobs.length > 0 && <div className="schedule-group"><h3>งานถัดไป</h3>{upcomingJobs.map(renderJob)}</div>}
+            {completedJobs.length > 0 && <details className="completed-jobs"><summary>เสร็จแล้ว {completedJobs.length} งาน</summary>{completedJobs.map(renderJob)}</details>}
+          </>}
+        </section>
+        <aside className="day-followups"><h2>ต้องติดตาม</h2><Link to="/orders" className="followup-row"><span>คำสั่งซื้อรอดำเนินการ</span><strong>{metrics.awaiting.length}</strong></Link><Link to="/products" className="followup-row"><span>สินค้าถึงจุดสั่งซื้อ</span><strong>{metrics.low.length}</strong></Link><p className="muted">ตรวจรายการก่อนรับงานและขายสินค้า</p></aside>
       </div>
+      <details className="shop-report" ref={report} open={!owner}>
+        <summary>{owner ? 'ยอดขายและรายงานร้าน' : 'รายการที่ต้องติดตาม'}</summary>
+        {owner && <dl className="sales-summary"><div><dt>ยอดขายวันนี้</dt><dd>{money(metrics.todaySales)}</dd></div><div><dt>ยอดขายเดือนนี้</dt><dd>{money(metrics.months[5].total)}</dd></div></dl>}
       <div className="dashboard-grid">
         <section className="panel">
           <div className="panel-heading">
@@ -151,7 +85,7 @@ export default function Dashboard() {
               <h2>{owner ? "ยอดขายรายเดือน" : "สถานะคำสั่งซื้อ"}</h2>
               <p className="section-subtitle">
                 {owner
-                  ? "6 เดือนล่าสุด · หน่วยบาท"
+                  ? "6 เดือนล่าสุด หน่วยบาท"
                   : "คำสั่งซื้อทั้งหมดของร้าน"}
               </p>
             </div>
@@ -231,10 +165,10 @@ export default function Dashboard() {
           <div className="panel-heading">
             <div>
               <h2>สินค้าขายดี</h2>
-              <p className="section-subtitle">จำนวนที่ขาย · 6 เดือนล่าสุด</p>
+              <p className="section-subtitle">จำนวนที่ขายใน 6 เดือนล่าสุด</p>
             </div>
             <Link to="/products" className="text-link">
-              ดูสินค้า <ArrowUpRight size={14} />
+              ดูรายการสินค้า
             </Link>
           </div>
           <div className="top-products">
@@ -271,75 +205,18 @@ export default function Dashboard() {
           <div className="panel-heading">
             <div>
               <h2>
-                งานช่างวันนี้{" "}
-                <span className="count-pill">{metrics.todayJobs.length}</span>
-              </h2>
-              <p className="section-subtitle">ติดตั้ง ล้างแอร์ และซ่อม</p>
-            </div>
-            <Link className="text-link" to="/bookings">
-              ดูทั้งหมด <ArrowUpRight size={14} />
-            </Link>
-          </div>
-          <div className="today-jobs">
-            {metrics.todayJobs.map((job) => (
-              <button
-                className="today-job"
-                key={job.id}
-                onClick={() => setJob(job.id)}
-              >
-                <span className="today-time">
-                  {dateText(job.start, "HH:mm")}
-                  <small>{dateText(job.end, "HH:mm")}</small>
-                </span>
-                <div>
-                  <strong>
-                    {bookingTypeLabels[job.type]} ·{" "}
-                    {
-                      state.customers.find(
-                        (customer) => customer.id === job.customerId,
-                      )?.name
-                    }
-                  </strong>
-                  <small>
-                    {
-                      state.technicians.find(
-                        (tech) => tech.id === job.technicianId,
-                      )?.name
-                    }
-                  </small>
-                </div>
-                <span className={`badge ${job.status}`}>
-                  {bookingLabels[job.status]}
-                </span>
-              </button>
-            ))}
-            {!metrics.todayJobs.length && (
-              <EmptyState
-                title="วันนี้ไม่มีนัดหมาย"
-                detail="ทีมช่างพร้อมสำหรับงานใหม่"
-              />
-            )}
-          </div>
-        </section>
-        <section className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>
                 สต็อกที่ต้องเติม{" "}
                 <span className="count-pill warning">{metrics.low.length}</span>
               </h2>
               <p className="section-subtitle">คงเหลือถึงหรือต่ำกว่าขั้นต่ำ</p>
             </div>
             <Link className="text-link" to="/products">
-              ดูทั้งหมด <ArrowUpRight size={14} />
+              ดูรายการสินค้า
             </Link>
           </div>
           <div className="low-products">
             {metrics.low.slice(0, 4).map((product) => (
               <Link to="/products" className="low-product" key={product.id}>
-                <span className="low-icon">
-                  <AlertTriangle size={16} />
-                </span>
                 <div>
                   <strong>{product.name}</strong>
                   <small>
@@ -367,7 +244,7 @@ export default function Dashboard() {
               <p className="section-subtitle">อัปเดตล่าสุด</p>
             </div>
             <Link className="text-link" to="/orders">
-              ดูทั้งหมด <ArrowUpRight size={14} />
+              ดูคำสั่งซื้อ
             </Link>
           </div>
           {metrics.awaiting.length ? (
@@ -429,6 +306,7 @@ export default function Dashboard() {
           )}
         </section>
       </div>
+      </details>
       {order && <OrderDetail orderId={order} onClose={() => setOrder(null)} />}
       {job && <BookingDetail bookingId={job} onClose={() => setJob(null)} />}
       {reset && (
