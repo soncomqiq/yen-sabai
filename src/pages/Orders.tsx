@@ -1,15 +1,9 @@
 import { useState } from "react";
 import {
-  Plus,
-  Download,
   Search,
   ChevronLeft,
   ChevronRight,
-  ArrowRight,
   Trash2,
-  ShoppingBag,
-  Clock3,
-  CheckCircle2,
 } from "lucide-react";
 import type { OrderStatus, OrderDraft } from "../domain/types";
 import { orderLabels, orderTotal } from "../domain/types";
@@ -73,64 +67,19 @@ export default function Orders() {
     <>
       <PageHeading
         title="คำสั่งซื้อ"
-        subtitle="ติดตามทุกการขาย ตั้งแต่รับออเดอร์จนส่งมอบ"
+        subtitle={status === 'all' ? `คำสั่งซื้อทั้งหมด ${state.orders.length} รายการ` : `พบ ${filtered.length} รายการที่${orderLabels[status as OrderStatus]}`}
         actions={
           <>
             <button className="secondary" onClick={download}>
-              <Download size={17} />
               ส่งออก Excel
             </button>
             <button className="primary" onClick={() => setCreating(true)}>
-              <Plus size={17} />
               สร้างคำสั่งซื้อ
             </button>
           </>
         }
       />
-      <div className="stats-grid three">
-        <div className="stat-card">
-          <span className="stat-icon">
-            <ShoppingBag />
-          </span>
-          <div>
-            <p>คำสั่งซื้อทั้งหมด</p>
-            <strong>
-              {state.orders.length} <small>รายการ</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon amber">
-            <Clock3 />
-          </span>
-          <div>
-            <p>รอดำเนินการ</p>
-            <strong>
-              {
-                state.orders.filter(
-                  (order) => !["completed", "cancelled"].includes(order.status),
-                ).length
-              }{" "}
-              <small>รายการ</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon blue">
-            <CheckCircle2 />
-          </span>
-          <div>
-            <p>ส่งมอบสำเร็จ</p>
-            <strong>
-              {
-                state.orders.filter((order) => order.status === "completed")
-                  .length
-              }{" "}
-              <small>รายการ</small>
-            </strong>
-          </div>
-        </div>
-      </div>
+      <p className="list-summary">รอดำเนินการ {state.orders.filter(order => !['completed', 'cancelled'].includes(order.status)).length} รายการ <span>ส่งมอบสำเร็จ {state.orders.filter(order => order.status === 'completed').length} รายการ</span></p>
       <section className="panel">
         <div className="list-toolbar">
           <div className="search-input">
@@ -236,12 +185,12 @@ export default function Orders() {
                         <td className="numeric">{money(orderTotal(order))}</td>
                         <td className="action-cell">
                           <button
-                            className="icon-button"
+                            className="text-link"
                             aria-label={`รายละเอียด ${order.id}`}
                             title="ดูรายละเอียด"
                             onClick={() => setDetail(order.id)}
                           >
-                            <ArrowRight />
+                            รายละเอียด
                           </button>
                         </td>
                       </tr>
@@ -367,7 +316,7 @@ function OrderForm({
             <option value="">เลือกลูกค้า</option>
             {state!.customers.map((customer) => (
               <option key={customer.id} value={customer.id}>
-                {customer.name} · {customer.phone}
+                {customer.name} โทร {customer.phone}
               </option>
             ))}
           </select>
@@ -402,15 +351,12 @@ function OrderForm({
                         value={product.id}
                         disabled={product.stock === 0}
                       >
-                        {product.name} · เหลือ {product.stock}
+                        {product.name} เหลือ {product.stock}
                       </option>
                     ))}
                   </select>
                   {product && (
-                    <small className="muted">
-                      {money(product.price)} / {product.unit} · คงเหลือ{" "}
-                      {product.stock}
-                    </small>
+                    <span className="selected-product"><strong>{product.name}</strong><small className="muted">{money(product.price)} / {product.unit} คงเหลือ {product.stock}</small></span>
                   )}
                 </label>
                 <label>
@@ -459,7 +405,6 @@ function OrderForm({
             ])
           }
         >
-          <Plus size={16} />
           เพิ่มรายการสินค้า
         </button>
         <div className="order-total">
@@ -476,7 +421,7 @@ function OrderForm({
             disabled={busy}
             onClick={onClose}
           >
-            กลับ
+            ยกเลิกการแก้ไข
           </button>
           <button className="primary" disabled={busy}>
             {busy ? "กำลังบันทึก…" : "สร้างคำสั่งซื้อ"}
@@ -506,7 +451,7 @@ export function OrderDetail({
       : ["pending", "paid", "fulfillment", "completed"];
   return (
     <>
-      <Modal
+      {!quotation && !cancel && <Modal
         title={`คำสั่งซื้อ ${order.id}`}
         onClose={() => {
           if (!busy) onClose();
@@ -530,7 +475,6 @@ export function OrderDetail({
         </div>
         <div className="quotation-action">
           <button className="secondary" onClick={() => setQuotation(true)}>
-            <Download size={16} />
             ใบเสนอราคา PDF
           </button>
         </div>
@@ -539,13 +483,7 @@ export function OrderDetail({
             const event = order.timeline.find((event) => event.status === step);
             return (
               <li key={`${step}-${index}`} className={event ? "reached" : ""}>
-                <span className="timeline-dot">
-                  {event ? (
-                    <CheckCircle2 size={17} />
-                  ) : (
-                    <span>{index + 1}</span>
-                  )}
-                </span>
+                <span className="timeline-marker">{index + 1}</span>
                 <strong>{orderLabels[step]}</strong>
                 <small>
                   {event ? dateText(event.at, "d MMM HH:mm") : "รอดำเนินการ"}
@@ -555,7 +493,7 @@ export function OrderDetail({
           })}
         </ol>
         <div className="table-scroll">
-          <table>
+          <table className="order-items-table">
             <thead>
               <tr>
                 <th>สินค้า</th>
@@ -606,12 +544,11 @@ export function OrderDetail({
                   )
                 }
               >
-                {orderLabels[status]}
-                <ArrowRight size={16} />
+                {status === 'paid' ? 'บันทึกการชำระเงิน' : status === 'fulfillment' ? 'เตรียมติดตั้งหรือจัดส่ง' : 'บันทึกการส่งมอบ'}
               </button>
             ))}
         </div>
-      </Modal>
+      </Modal>}
       {quotation && (
         <QuotationDialog
           order={order}
@@ -636,7 +573,7 @@ export function OrderDetail({
               disabled={busy}
               onClick={() => setCancel(false)}
             >
-              กลับ
+              ไม่ยกเลิกคำสั่งซื้อ
             </button>
             <button
               className="danger"
@@ -651,7 +588,7 @@ export function OrderDetail({
                   setCancel(false);
               }}
             >
-              ยืนยันยกเลิก
+              ยกเลิกคำสั่งซื้อ
             </button>
           </div>
         </Modal>

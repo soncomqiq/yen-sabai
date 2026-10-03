@@ -256,10 +256,10 @@ test("product form, stock rules, order creation, status flow, cancellation and p
     .getByRole("button", { name: "สร้างคำสั่งซื้อ", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText("ตัดสต็อก");
-  for (const name of ["ชำระแล้ว", "รอติดตั้ง/จัดส่ง", "สำเร็จ"]) {
+  for (const [name, action] of [["ชำระแล้ว", "บันทึกการชำระเงิน"], ["รอติดตั้ง/จัดส่ง", "เตรียมติดตั้งหรือจัดส่ง"], ["สำเร็จ", "บันทึกการส่งมอบ"]]) {
     await page
       .locator("dialog")
-      .getByRole("button", { name, exact: true })
+      .getByRole("button", { name: action, exact: true })
       .click();
     await expect(page.getByRole("status")).toContainText(`เปลี่ยนเป็น ${name}`);
   }
@@ -279,7 +279,7 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .locator("dialog")
     .last()
-    .getByRole("button", { name: "กลับ", exact: true })
+    .getByRole("button", { name: "ไม่ยกเลิกคำสั่งซื้อ", exact: true })
     .click();
   expect(
     (await snapshot(page)).products.find((item) => item.id === product.id)!
@@ -288,7 +288,7 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByRole("button", { name: "ยกเลิกคำสั่งซื้อ", exact: true })
     .click();
-  await page.getByRole("button", { name: "ยืนยันยกเลิก", exact: true }).click();
+  await page.getByRole("button", { name: "ยกเลิกคำสั่งซื้อ", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("คืนสต็อก");
   expect(
     (await snapshot(page)).products.find((item) => item.id === product.id)!
