@@ -1,32 +1,15 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
+  useCallback,
   type ReactNode,
 } from "react";
 import { CheckCircle2, AlertCircle, X, RefreshCw } from "lucide-react";
 import type { ShopState, User } from "../domain/types";
-import type { ShopService } from "../services/interface";
+import { ShopContext } from './ShopContext';
 import { createShopService } from "../services";
 import { Modal } from "./Modal";
 
-interface ShopContextValue {
-  user: User;
-  state: ShopState | null;
-  service: ShopService;
-  busy: boolean;
-  error: string;
-  actionError: string;
-  clearActionError: () => void;
-  run: (action: () => Promise<unknown>, message?: string) => Promise<boolean>;
-  refresh: () => Promise<void>;
-  notify: (message: string, error?: boolean) => void;
-}
-const ShopContext = createContext<ShopContextValue | null>(null);
-export function useShop() {
-  return useContext(ShopContext)!;
-}
 export function DataProvider({
   user,
   children,
@@ -45,6 +28,7 @@ export function DataProvider({
       error: boolean;
     } | null>(null),
     [resetOpen, setResetOpen] = useState(false);
+  const clearActionError = useCallback(() => setActionError(""), []);
   async function refresh() {
     setState(await service.snapshot(user));
     setError("");
@@ -69,7 +53,7 @@ export function DataProvider({
     return () => clearTimeout(timer);
   }, [toast]);
   function notify(message: string, failure = false) {
-    if (failure && document.querySelector('dialog[open]')) {
+    if (failure && document.querySelector("dialog[open]")) {
       setActionError(message);
       setToast(null);
       return;
@@ -81,7 +65,7 @@ export function DataProvider({
     message = "บันทึกเรียบร้อยแล้ว",
   ) {
     if (busy) return false;
-    setActionError('');
+    setActionError("");
     setBusy(true);
     try {
       await action();
@@ -102,7 +86,18 @@ export function DataProvider({
   }
   return (
     <ShopContext
-      value={{ user, state, service, busy, error, actionError, clearActionError: () => setActionError(''), run, refresh, notify }}
+      value={{
+        user,
+        state,
+        service,
+        busy,
+        error,
+        actionError,
+        clearActionError,
+        run,
+        refresh,
+        notify,
+      }}
     >
       {error ? (
         <div className="error-panel" role="alert">

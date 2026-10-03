@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:browser": "playwright test",
     "screenshots": "node scripts/capture-portfolio.mjs",
+    "gallery": "node scripts/build-gallery.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",

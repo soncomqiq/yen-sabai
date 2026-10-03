@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   addDays,
   addHours,
@@ -7,11 +7,7 @@ import {
   startOfDay,
   startOfWeek,
 } from "date-fns";
-import {
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import type {
   Booking,
   BookingDraft,
@@ -19,7 +15,7 @@ import type {
   BookingStatus,
 } from "../domain/types";
 import { bookingLabels, bookingTypeLabels } from "../domain/types";
-import { useShop } from "../components/DataProvider";
+import { useShop } from "../components/ShopContext";
 import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { dateText, localInput } from "../lib/format";
@@ -32,10 +28,16 @@ interface NewJob {
 }
 export default function Bookings() {
   const { state, user } = useShop();
-  const [today] = useState(() => new Date());
+  const [today, setToday] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setToday(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
   const [date, setDate] = useState(() => startOfDay(new Date())),
     [mode, setMode] = useState<"week" | "day">("day"),
-    [agenda, setAgenda] = useState(() => window.matchMedia('(max-width: 700px)').matches),
+    [agenda, setAgenda] = useState(
+      () => window.matchMedia("(max-width: 700px)").matches,
+    ),
     [status, setStatus] = useState("all"),
     [detail, setDetail] = useState<string | null>(null),
     [editing, setEditing] = useState<Booking | NewJob | null>(null);
@@ -78,7 +80,7 @@ export default function Bookings() {
         title={office ? "ตารางงานช่าง" : "งานของฉัน"}
         subtitle={
           office
-            ? dateText(date, 'EEEE d MMMM yyyy')
+            ? dateText(date, "EEEE d MMMM yyyy")
             : `${user.name} งานที่ได้รับมอบหมาย`
         }
         actions={
@@ -157,39 +159,97 @@ export default function Bookings() {
               <button
                 aria-pressed={mode === "week"}
                 className={mode === "week" ? "active" : ""}
-                onClick={() => { setMode("week"); setAgenda(false); }}
+                onClick={() => {
+                  setMode("week");
+                  setAgenda(false);
+                }}
               >
                 สัปดาห์
               </button>
               <button
                 aria-pressed={mode === "day" && !agenda}
                 className={mode === "day" && !agenda ? "active" : ""}
-                onClick={() => { setMode("day"); setAgenda(false); }}
+                onClick={() => {
+                  setMode("day");
+                  setAgenda(false);
+                }}
               >
                 วัน
               </button>
-              <button aria-pressed={agenda} className={agenda ? 'active' : ''} onClick={() => { setMode('day'); setAgenda(true); }}>รายการงาน</button>
+              <button
+                aria-pressed={agenda}
+                className={agenda ? "active" : ""}
+                onClick={() => {
+                  setMode("day");
+                  setAgenda(true);
+                }}
+              >
+                รายการงาน
+              </button>
             </div>
           </div>
         </div>
-        {mode === 'week' && <div className="week-picker" aria-label="เลือกวันในสัปดาห์">{days.map(day => <button key={day.toISOString()} className={isSameDay(day, date) ? 'active' : ''} aria-pressed={isSameDay(day, date)} onClick={() => setDate(day)}>{dateText(day, 'EEE')}<strong>{dateText(day, 'd')}</strong></button>)}</div>}
-        {agenda && <div className="booking-agenda">{jobs.filter(job => isSameDay(new Date(job.start), date)).map(job => <button key={job.id} className="agenda-row" onClick={() => setDetail(job.id)}><span className="agenda-time">{dateText(job.start, 'HH:mm')}–{dateText(job.end, 'HH:mm')}</span><strong>{customer(job.customerId)}</strong><span>{bookingTypeLabels[job.type]} {state.technicians.find(tech => tech.id === job.technicianId)?.name}</span><span className={`badge ${job.status}`}>{bookingLabels[job.status]}</span></button>)}</div>}
-        <div className={`calendar-scroll ${agenda ? 'calendar-hidden' : ''}`}>
+        {mode === "week" && (
+          <div className="week-picker" aria-label="เลือกวันในสัปดาห์">
+            {days.map((day) => (
+              <button
+                key={day.toISOString()}
+                className={isSameDay(day, date) ? "active" : ""}
+                aria-pressed={isSameDay(day, date)}
+                onClick={() => setDate(day)}
+              >
+                {dateText(day, "EEE")}
+                <strong>{dateText(day, "d")}</strong>
+              </button>
+            ))}
+          </div>
+        )}
+        {agenda && (
+          <div className="booking-agenda">
+            {jobs
+              .filter((job) => isSameDay(new Date(job.start), date))
+              .map((job) => (
+                <button
+                  key={job.id}
+                  className="agenda-row"
+                  onClick={() => setDetail(job.id)}
+                >
+                  <span className="agenda-time">
+                    {dateText(job.start, "HH:mm")}–{dateText(job.end, "HH:mm")}
+                  </span>
+                  <strong>{customer(job.customerId)}</strong>
+                  <span>
+                    {bookingTypeLabels[job.type]}{" "}
+                    {
+                      state.technicians.find(
+                        (tech) => tech.id === job.technicianId,
+                      )?.name
+                    }
+                  </span>
+                  <span className={`badge ${job.status}`}>
+                    {bookingLabels[job.status]}
+                  </span>
+                </button>
+              ))}
+          </div>
+        )}
+        <div className={`calendar-scroll ${agenda ? "calendar-hidden" : ""}`}>
           <div
             className={`calendar-grid ${state.technicians.length === 1 ? "own-calendar" : ""}`}
           >
             <div className="calendar-columns" style={calendarStyle}>
-              <div className="calendar-corner">
-                เวลา
-              </div>
+              <div className="calendar-corner">เวลา</div>
               {state.technicians.map((tech) => (
                 <div className="technician-heading" key={tech.id}>
                   <span>
                     <strong>{tech.name}</strong>
                     <small>
                       {
-                        jobs.filter((job) => job.technicianId === tech.id && isSameDay(new Date(job.start), date))
-                          .length
+                        jobs.filter(
+                          (job) =>
+                            job.technicianId === tech.id &&
+                            isSameDay(new Date(job.start), date),
+                        ).length
                       }{" "}
                       งาน
                     </small>
@@ -197,72 +257,99 @@ export default function Bookings() {
                 </div>
               ))}
             </div>
-              <div
-                className="day-grid"
-                style={{
-                  ...calendarStyle,
-                  height: `${(latest - earliest) * 60}px`,
-                }}
-              >
-                {isSameDay(date, today) && today.getHours() >= earliest && today.getHours() < latest && <div className="current-time-rule" style={{ top: `${(today.getHours() - earliest) * 60 + today.getMinutes()}px` }}><span>ขณะนี้ {dateText(today, 'HH:mm')}</span></div>}
-                <div className="time-column">
-                  {Array.from({ length: latest - earliest }, (_, index) => (
-                    <span key={index} style={{ top: `${index * 60}px` }}>
-                      {String(earliest + index).padStart(2, "0")}:00
-                    </span>
-                  ))}
-                </div>
-                {state.technicians.map((tech) => (
-                  <div className="day-technician" key={tech.id}>
-                    <div className="time-rules" aria-hidden="true">{Array.from({ length: (latest - earliest) * 2 }, (_, index) => <i key={index} className={index % 2 === 0 ? 'hour-rule' : 'half-hour-rule'} style={{ top: `${index * 30}px` }} />)}</div>
-                    {office && (
-                      <button
-                        className="add-day-job"
-                        title="เพิ่มนัดหมาย"
-                        aria-label={`นัด ${tech.name} ${dateText(date)}`}
-                        onClick={() =>
-                          setEditing({ date, technicianId: tech.id })
-                        }
-                      >
-                        <Plus size={16} />
-                      </button>
-                    )}
-                    {jobs
-                      .filter((job) => job.technicianId === tech.id && isSameDay(new Date(job.start), date))
-                      .map((job) => {
-                        const startTime = new Date(job.start),
-                          minutes =
-                            (startTime.getHours() - earliest) * 60 +
-                            startTime.getMinutes(),
-                          duration =
-                            (new Date(job.end).getTime() -
-                              startTime.getTime()) /
-                            60000;
-                        return (
-                          <button
-                            className={`job-block day-job ${job.status}`}
-                            data-compact={duration < 90}
-                            key={job.id}
-                            style={{
-                              top: `${minutes}px`,
-                              height: `${Math.max(2, duration)}px`,
-                            }}
-                            onClick={() => setDetail(job.id)}
-                            title={`${dateText(job.start, "HH:mm")}–${dateText(job.end, "HH:mm")} ${bookingTypeLabels[job.type]} ${customer(job.customerId)}`}
-                          >
-                            <span className="job-time">
-                              {dateText(job.start, "HH:mm")}–
-                              {dateText(job.end, "HH:mm")}
-                            </span>
-                            <strong>{customer(job.customerId)}</strong>
-                            <span>{bookingTypeLabels[job.type]}</span>
-                            <small>{bookingLabels[job.status]}</small>
-                          </button>
-                        );
-                      })}
+            <div
+              className="day-grid"
+              style={{
+                ...calendarStyle,
+                height: `${(latest - earliest) * 60}px`,
+              }}
+            >
+              {isSameDay(date, today) &&
+                today.getHours() >= earliest &&
+                today.getHours() < latest && (
+                  <div
+                    className="current-time-rule"
+                    style={{
+                      top: `${(today.getHours() - earliest) * 60 + today.getMinutes()}px`,
+                    }}
+                  >
+                    <span>ขณะนี้ {dateText(today, "HH:mm")}</span>
                   </div>
+                )}
+              <div className="time-column">
+                {Array.from({ length: latest - earliest }, (_, index) => (
+                  <span key={index} style={{ top: `${index * 60}px` }}>
+                    {String(earliest + index).padStart(2, "0")}:00
+                  </span>
                 ))}
               </div>
+              {state.technicians.map((tech) => (
+                <div className="day-technician" key={tech.id}>
+                  <div className="time-rules" aria-hidden="true">
+                    {Array.from(
+                      { length: (latest - earliest) * 2 },
+                      (_, index) => (
+                        <i
+                          key={index}
+                          className={
+                            index % 2 === 0 ? "hour-rule" : "half-hour-rule"
+                          }
+                          style={{ top: `${index * 30}px` }}
+                        />
+                      ),
+                    )}
+                  </div>
+                  {office && (
+                    <button
+                      className="add-day-job"
+                      title="เพิ่มนัดหมาย"
+                      aria-label={`นัด ${tech.name} ${dateText(date)}`}
+                      onClick={() =>
+                        setEditing({ date, technicianId: tech.id })
+                      }
+                    >
+                      <Plus size={16} />
+                    </button>
+                  )}
+                  {jobs
+                    .filter(
+                      (job) =>
+                        job.technicianId === tech.id &&
+                        isSameDay(new Date(job.start), date),
+                    )
+                    .map((job) => {
+                      const startTime = new Date(job.start),
+                        minutes =
+                          (startTime.getHours() - earliest) * 60 +
+                          startTime.getMinutes(),
+                        duration =
+                          (new Date(job.end).getTime() - startTime.getTime()) /
+                          60000;
+                      return (
+                        <button
+                          className={`job-block day-job ${job.status}`}
+                          data-compact={duration < 90}
+                          key={job.id}
+                          style={{
+                            top: `${minutes}px`,
+                            height: `${Math.max(2, duration)}px`,
+                          }}
+                          onClick={() => setDetail(job.id)}
+                          title={`${dateText(job.start, "HH:mm")}–${dateText(job.end, "HH:mm")} ${bookingTypeLabels[job.type]} ${customer(job.customerId)}`}
+                        >
+                          <span className="job-time">
+                            {dateText(job.start, "HH:mm")}–
+                            {dateText(job.end, "HH:mm")}
+                          </span>
+                          <strong>{customer(job.customerId)}</strong>
+                          <span>{bookingTypeLabels[job.type]}</span>
+                          <small>{bookingLabels[job.status]}</small>
+                        </button>
+                      );
+                    })}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         {jobs.length === 0 && (
@@ -327,18 +414,14 @@ export function BookingDetail({
         <h3>{customer.name}</h3>
         <p>{bookingTypeLabels[job.type]}</p>
         <p>
-          {dateText(job.start, "d MMM yyyy")} เวลา {dateText(job.start, "HH:mm")}–
-          {dateText(job.end, "HH:mm")}
+          {dateText(job.start, "d MMM yyyy")} เวลา{" "}
+          {dateText(job.start, "HH:mm")}–{dateText(job.end, "HH:mm")}
         </p>
-        <p>
-          {tech.name}
-        </p>
+        <p>{tech.name}</p>
         <p>
           <a href={`tel:${customer.phone}`}>{customer.phone}</a>
         </p>
-        <p>
-          {customer.address}
-        </p>
+        <p>{customer.address}</p>
         {job.orderId && (
           <p className="muted">อ้างอิงคำสั่งซื้อ {job.orderId}</p>
         )}

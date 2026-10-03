@@ -121,35 +121,35 @@ come from the CSS, not an inference from still images.
 Each number below includes **both desktop and mobile**. `27` is mobile only.
 All 18 full-page versions and both document images were also reviewed.
 
-| Capture | Observation and intended response |
-| --- | --- |
-| 01 login | Split promotional composition, greeting, diagonal line and arrow CTA. Use a quiet brand header and compact form. |
-| 02 owner dashboard | KPIs/chart before today's work. Reverse hierarchy; numbers become a secondary report. |
-| 03 products | Summary tiles above filters/list; many row tool buttons. Compress summary and keep one clearly named primary stock action. |
-| 04 low stock | Same layout repeated; warning filter has little prominence. Show a focused replenishment list with quantity/minimum visible. |
-| 05 product form | Framed form-note block and generic modal treatment. Preserve working validation; group fields with spacing and explicit save label. |
-| 06 stock in | CTA "ยืนยันรายการ" does not identify effect. Use "บันทึกรับเข้า" with quantity/unit alongside product. |
-| 07 stock out | Same generic CTA as receipt. Use "บันทึกเบิกออก" and keep available quantity visible. |
-| 08 stock history | Small table; amount column falls outside mobile width. Use dated rows with right-aligned signed quantities. |
-| 09 orders | Three KPI tiles delay results. One summary/filter line; status, customer and total remain easy to scan. |
-| 10 pending orders | Filtered state barely changes context. State "คำสั่งซื้อรอชำระ" and matching result count without adding a hero. |
-| 11 order detail | Tiny process labels, large empty intervals and arrow CTA. Compact actual status history and explicit action names. |
-| 12 cancellation | Stacked dialogs/blur and generic confirmation. One concise confirmation naming the order and stock effect. |
-| 13 quotation preview | A4 content remains legible only when enlarged on mobile. Preserve clean document layout and use a named download action. |
-| 14 order creation | Product options truncate on mobile; total and helper box use generic emphasis. Selected name must wrap outside the selector. |
-| 15 week calendar | Day rows contain cards, not a consistent time axis. Preserve week navigation but use an appointment-book grid for selected day. |
-| 16 day calendar | Real grid is a useful foundation; staff circles/extra toolbar rows distract. Keep time axis and legible appointment names. |
-| 17 job detail | Date/contact/notes all get icons and dot-joined metadata. Put customer and time first with short labeled lines. |
-| 18 rescheduling | "แก้ไขงาน / เลื่อนนัด" mixes intentions. Explicit edit/reschedule title and persistent inline scheduling feedback. |
-| 19 booking creation | Many equally weighted fields. Customer, service, staff, date/time first; optional reference/notes secondary. |
-| 20 booking conflict | Rule message is behind the modal. Inline error beneath time/staff fields and above save, without changing the rule. |
-| 21 customers | KPIs, initial avatars and repeated contact icons precede identity/history. Search and actionable contact/history rows first. |
-| 22 purchase history | Metrics consume vertical room; totals hidden to the right on mobile. Identity first and mobile row total always visible. |
-| 23 service history | Status hidden on mobile; purchase totals still dominate. Show last/next appointment context and status in each service row. |
-| 24 admin dashboard | Operational role still gets report-style tiles and distributions first. Same timeline-first hierarchy without financial data. |
-| 25 technician schedule | Week view starts in the past and spans empty width on desktop. Default to today's own agenda without altering permissions. |
-| 26 technician detail | Good own-job boundary; decorations/arrows dilute the single task. Plain time/contact context and explicit completion action. |
-| 27 mobile navigation | Large dark rail, every item iconized and duplicated header context. Compact text navigation with selected-state indicator. |
+| Capture                | Observation and intended response                                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 01 login               | Split promotional composition, greeting, diagonal line and arrow CTA. Use a quiet brand header and compact form.                    |
+| 02 owner dashboard     | KPIs/chart before today's work. Reverse hierarchy; numbers become a secondary report.                                               |
+| 03 products            | Summary tiles above filters/list; many row tool buttons. Compress summary and keep one clearly named primary stock action.          |
+| 04 low stock           | Same layout repeated; warning filter has little prominence. Show a focused replenishment list with quantity/minimum visible.        |
+| 05 product form        | Framed form-note block and generic modal treatment. Preserve working validation; group fields with spacing and explicit save label. |
+| 06 stock in            | CTA "ยืนยันรายการ" does not identify effect. Use "บันทึกรับเข้า" with quantity/unit alongside product.                              |
+| 07 stock out           | Same generic CTA as receipt. Use "บันทึกเบิกออก" and keep available quantity visible.                                               |
+| 08 stock history       | Small table; amount column falls outside mobile width. Use dated rows with right-aligned signed quantities.                         |
+| 09 orders              | Three KPI tiles delay results. One summary/filter line; status, customer and total remain easy to scan.                             |
+| 10 pending orders      | Filtered state barely changes context. State "คำสั่งซื้อรอชำระ" and matching result count without adding a hero.                    |
+| 11 order detail        | Tiny process labels, large empty intervals and arrow CTA. Compact actual status history and explicit action names.                  |
+| 12 cancellation        | Stacked dialogs/blur and generic confirmation. One concise confirmation naming the order and stock effect.                          |
+| 13 quotation preview   | A4 content remains legible only when enlarged on mobile. Preserve clean document layout and use a named download action.            |
+| 14 order creation      | Product options truncate on mobile; total and helper box use generic emphasis. Selected name must wrap outside the selector.        |
+| 15 week calendar       | Day rows contain cards, not a consistent time axis. Preserve week navigation but use an appointment-book grid for selected day.     |
+| 16 day calendar        | Real grid is a useful foundation; staff circles/extra toolbar rows distract. Keep time axis and legible appointment names.          |
+| 17 job detail          | Date/contact/notes all get icons and dot-joined metadata. Put customer and time first with short labeled lines.                     |
+| 18 rescheduling        | "แก้ไขงาน / เลื่อนนัด" mixes intentions. Explicit edit/reschedule title and persistent inline scheduling feedback.                  |
+| 19 booking creation    | Many equally weighted fields. Customer, service, staff, date/time first; optional reference/notes secondary.                        |
+| 20 booking conflict    | Rule message is behind the modal. Inline error beneath time/staff fields and above save, without changing the rule.                 |
+| 21 customers           | KPIs, initial avatars and repeated contact icons precede identity/history. Search and actionable contact/history rows first.        |
+| 22 purchase history    | Metrics consume vertical room; totals hidden to the right on mobile. Identity first and mobile row total always visible.            |
+| 23 service history     | Status hidden on mobile; purchase totals still dominate. Show last/next appointment context and status in each service row.         |
+| 24 admin dashboard     | Operational role still gets report-style tiles and distributions first. Same timeline-first hierarchy without financial data.       |
+| 25 technician schedule | Week view starts in the past and spans empty width on desktop. Default to today's own agenda without altering permissions.          |
+| 26 technician detail   | Good own-job boundary; decorations/arrows dilute the single task. Plain time/contact context and explicit completion action.        |
+| 27 mobile navigation   | Large dark rail, every item iconized and duplicated header context. Compact text navigation with selected-state indicator.          |
 
 The A4 quotations are more restrained than the web UI: aligned figures,
 whitespace and thin rules are worth retaining. Their signature/footer spacing
@@ -176,29 +176,28 @@ is document formatting, not a reason to add dashboard whitespace or cards.
 
 Six base values, not a palette expanded independently per page:
 
-| Token / name | Hex | Use |
-| --- | --- | --- |
-| `canvas` / Quiet grey-green | `#F5F7F6` | Page background; not cream/beige |
-| `surface` / Paper | `#FFFFFF` | Working lists, appointment book, forms |
-| `ink` / Charcoal green | `#233B35` | Names, headings, values |
-| `muted` / Secondary ink | `#526960` | Supporting text, dates, units |
-| `line` / Control edge | `#7E8F87` | Essential input boundaries, separators requiring identification |
-| `accent` / Eucalyptus | `#236B5E` | Primary actions, focus, current selection |
+| Token / name                | Hex       | Use                                                             |
+| --------------------------- | --------- | --------------------------------------------------------------- |
+| `canvas` / Quiet grey-green | `#F5F7F6` | Page background; not cream/beige                                |
+| `surface` / Paper           | `#FFFFFF` | Working lists, appointment book, forms                          |
+| `ink` / Charcoal green      | `#233B35` | Names, headings, values                                         |
+| `muted` / Secondary ink     | `#526960` | Supporting text, dates, units                                   |
+| `line` / Control edge       | `#7E8F87` | Essential input boundaries, separators requiring identification |
+| `accent` / Eucalyptus       | `#236B5E` | Primary actions, focus, current selection                       |
 
-For the **requested clinic direction**, eucalyptus is proposed from the quiet
-green of care uniforms and reusable treatment linens, not a generic SaaS blue.
-That is a design rationale, not a claim about an unknown clinic's actual brand.
-Confirm it with the clinic identity before implementation. In this shop it also
-respects the existing green brand without pretending it is a medical business.
+The approved shop adaptation keeps eucalyptus as a quieter version of
+Yensabai's existing green identity. Clean white working surfaces and restrained
+green action marks suit maintenance/service work without imitating a clinic.
+This is continuity with the shop's own demo identity, not a medical brand claim.
 No purple/indigo, pink gradients, cream/terracotta or decorative color washes.
 
-| Semantic state | Text / indicator | Muted fill | Domain labels retained |
-| --- | --- | --- | --- |
-| Waiting / needs action | `#7A5D26` | `#F5F0E5` | นัดแล้ว, รอชำระ, สต็อกต่ำ |
-| In progress / information | `#315D76` | `#ECF2F5` | กำลังทำ, รอติดตั้ง/จัดส่ง |
-| Complete / positive | `#3E6950` | `#EDF3EE` | เสร็จ, สำเร็จ, ชำระแล้ว, พร้อมขาย |
-| Cancelled / destructive | `#864E45` | `#F7EEEB` | ยกเลิก, validation errors |
-| Neutral | `#59635F` | `#F0F2F1` | Counts/secondary states, not a substitute for status labels |
+| Semantic state            | Text / indicator | Muted fill | Domain labels retained                                      |
+| ------------------------- | ---------------- | ---------- | ----------------------------------------------------------- |
+| Waiting / needs action    | `#7A5D26`        | `#F5F0E5`  | นัดแล้ว, รอชำระ, สต็อกต่ำ                                   |
+| In progress / information | `#315D76`        | `#ECF2F5`  | กำลังทำ, รอติดตั้ง/จัดส่ง                                   |
+| Complete / positive       | `#3E6950`        | `#EDF3EE`  | เสร็จ, สำเร็จ, ชำระแล้ว, พร้อมขาย                           |
+| Cancelled / destructive   | `#864E45`        | `#F7EEEB`  | ยกเลิก, validation errors                                   |
+| Neutral                   | `#59635F`        | `#F0F2F1`  | Counts/secondary states, not a substitute for status labels |
 
 Use these same mappings in timeline, calendar, tables and profile history. Staff
 identity comes from column names, not a second competing color code. Appointment
@@ -226,13 +225,13 @@ It is already licensed/included, so this deliberate retention avoids a font
 download or family change just to make the redesign look different. No synthetic
 700, negative letter spacing or font sizes tied to viewport width.
 
-| Token | Size / line height | Weight | Application |
-| --- | --- | --- | --- |
-| `meta` | 12 / 20px | 400 | Secondary IDs, units, noncritical hints |
-| `compact` | 14 / 24px | 400 or 600 | Table rows, form labels, appointment time |
-| `body` | 16 / 28px | 400 | Customer names, important form/error text, actions |
-| `section` | 20 / 32px | 600 | Section title, secondary aggregate |
-| `page` | 28 / 40px | 600 | One page title; no oversized greeting |
+| Token     | Size / line height | Weight     | Application                                        |
+| --------- | ------------------ | ---------- | -------------------------------------------------- |
+| `meta`    | 12 / 20px          | 400        | Secondary IDs, units, noncritical hints            |
+| `compact` | 14 / 24px          | 400 or 600 | Table rows, form labels, appointment time          |
+| `body`    | 16 / 28px          | 400        | Customer names, important form/error text, actions |
+| `section` | 20 / 32px          | 600        | Section title, secondary aggregate                 |
+| `page`    | 28 / 40px          | 600        | One page title; no oversized greeting              |
 
 Body/compact/meta line height is at least 1.6. Never shrink below 12px to fit a
 calendar cell: wrap, shorten optional metadata or open detail. Keep Thai marks
@@ -442,24 +441,24 @@ Use the same verb for the same action everywhere. Object + effect, no generic
 "ยืนยัน", no greeting banner, no promotional promise beneath every heading.
 Separate time, phone and address into labeled lines; avoid middle-dot joins.
 
-| Current pattern | Proposed Thai |
-| --- | --- |
-| สวัสดี, คุณปริม | งานวันนี้ / นัดหมายวันนี้, followed by the date |
-| ยินดีต้อนรับกลับ | เข้าสู่ระบบ |
-| นัดหมายงานใหม่ | เพิ่มนัดหมาย |
-| Booking save | บันทึกนัดหมาย |
-| Reschedule save | บันทึกเวลาใหม่ |
-| แก้ไขงาน / เลื่อนนัด | แก้ไขนัดหมาย; เลื่อนนัด for the time-changing action |
-| ยืนยันรายการ on receipt | บันทึกรับเข้า |
-| ยืนยันรายการ on issue | บันทึกเบิกออก |
-| กลับ within a form | ยกเลิกการแก้ไข |
-| กลับ within a read-only detail | ปิดรายละเอียด |
-| ยืนยันยกเลิก | ยกเลิกคำสั่งซื้อ (with the named order in confirmation text) |
-| ชำระแล้ว as an action label | บันทึกการชำระเงิน |
-| ปิดงาน | บันทึกงานเสร็จ |
-| ดูทั้งหมด plus arrow | ดูตารางงาน / ดูคำสั่งซื้อ / ดูรายการสินค้า |
-| Product save | บันทึกสินค้า |
-| Export | ส่งออก Excel; ดาวน์โหลดใบเสนอราคา PDF |
+| Current pattern                | Proposed Thai                                                |
+| ------------------------------ | ------------------------------------------------------------ |
+| สวัสดี, คุณปริม                | งานวันนี้ / นัดหมายวันนี้, followed by the date              |
+| ยินดีต้อนรับกลับ               | เข้าสู่ระบบ                                                  |
+| นัดหมายงานใหม่                 | เพิ่มนัดหมาย                                                 |
+| Booking save                   | บันทึกนัดหมาย                                                |
+| Reschedule save                | บันทึกเวลาใหม่                                               |
+| แก้ไขงาน / เลื่อนนัด           | แก้ไขนัดหมาย; เลื่อนนัด for the time-changing action         |
+| ยืนยันรายการ on receipt        | บันทึกรับเข้า                                                |
+| ยืนยันรายการ on issue          | บันทึกเบิกออก                                                |
+| กลับ within a form             | ยกเลิกการแก้ไข                                               |
+| กลับ within a read-only detail | ปิดรายละเอียด                                                |
+| ยืนยันยกเลิก                   | ยกเลิกคำสั่งซื้อ (with the named order in confirmation text) |
+| ชำระแล้ว as an action label    | บันทึกการชำระเงิน                                            |
+| ปิดงาน                         | บันทึกงานเสร็จ                                               |
+| ดูทั้งหมด plus arrow           | ดูตารางงาน / ดูคำสั่งซื้อ / ดูรายการสินค้า                   |
+| Product save                   | บันทึกสินค้า                                                 |
+| Export                         | ส่งออก Excel; ดาวน์โหลดใบเสนอราคา PDF                        |
 
 These are presentation labels. Domain status names/values and allowed
 transitions remain untouched; e.g. "บันทึกการชำระเงิน" advances the existing
@@ -488,19 +487,19 @@ such as **บันทึกนัดหมายแล้ว**. No automatic re
 
 ## 9. Review Against Generic Defaults: Revisions Made to This Plan
 
-| Default to reject | Revision and why |
-| --- | --- |
-| Same rounded/shadowed card for every section | Replaced with full-width, unframed section bands and ruled rows. Different radii apply to controls, blocks and floating surfaces only. |
-| KPI tile with colored icon | Removed the top KPI row entirely. Owner figures are a small secondary report with plain labels and aligned values. |
-| Dark sidebar, greeting and marketing login as the main identity | Proposed a quiet compact navigation rail and a plain working login. Brand appears once, not as an eyebrow on every page. |
-| Decorative gradients / glass / emoji | No decorative gradient, header blur, backdrop blur or emoji. A dim backdrop is retained only for focus isolation. |
-| Icons in headings/labels and arrows on commands | Removed. Compact recognized tools may keep one icon with a tooltip/name; normal commands use specific Thai text. |
-| Metadata joined by middle dots | Changed to separate short labeled lines. This improves scanning customer/time/contact information. |
-| Fade-and-slide/stagger and hover lift on static sections | Removed. Static content is immediately stable; only actionable controls get state feedback. |
-| Agenda first on desktop as another repeated-card list | Revised to a time-aligned ruled timeline; desktop calendar remains a real time grid. Mobile agenda uses rows, not a stack of floating cards. |
-| Mint tint on every appointment or a color for each practitioner | Replaced with white blocks, state indicator/text and named staff columns, eliminating competing color meanings. |
-| "Clinic" invented by relabeling shop entities | Rejected. Room/practitioner/course assumptions are explicit approval gates; no mock clinical facts are proposed as implemented data. |
-| Border color chosen for delicacy only | Initial `#84958D` failed 3:1 on canvas (2.93:1). Revised essential edges to `#7E8F87` (3.17:1); decorative rules stay separate. |
+| Default to reject                                               | Revision and why                                                                                                                             |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Same rounded/shadowed card for every section                    | Replaced with full-width, unframed section bands and ruled rows. Different radii apply to controls, blocks and floating surfaces only.       |
+| KPI tile with colored icon                                      | Removed the top KPI row entirely. Owner figures are a small secondary report with plain labels and aligned values.                           |
+| Dark sidebar, greeting and marketing login as the main identity | Proposed a quiet compact navigation rail and a plain working login. Brand appears once, not as an eyebrow on every page.                     |
+| Decorative gradients / glass / emoji                            | No decorative gradient, header blur, backdrop blur or emoji. A dim backdrop is retained only for focus isolation.                            |
+| Icons in headings/labels and arrows on commands                 | Removed. Compact recognized tools may keep one icon with a tooltip/name; normal commands use specific Thai text.                             |
+| Metadata joined by middle dots                                  | Changed to separate short labeled lines. This improves scanning customer/time/contact information.                                           |
+| Fade-and-slide/stagger and hover lift on static sections        | Removed. Static content is immediately stable; only actionable controls get state feedback.                                                  |
+| Agenda first on desktop as another repeated-card list           | Revised to a time-aligned ruled timeline; desktop calendar remains a real time grid. Mobile agenda uses rows, not a stack of floating cards. |
+| Mint tint on every appointment or a color for each practitioner | Replaced with white blocks, state indicator/text and named staff columns, eliminating competing color meanings.                              |
+| "Clinic" invented by relabeling shop entities                   | Rejected. Room/practitioner/course assumptions are explicit approval gates; no mock clinical facts are proposed as implemented data.         |
+| Border color chosen for delicacy only                           | Initial `#84958D` failed 3:1 on canvas (2.93:1). Revised essential edges to `#7E8F87` (3.17:1); decorative rules stay separate.              |
 
 ## 10. Implementation and Review Gates, Only After Approval
 
@@ -530,13 +529,57 @@ such as **บันทึกนัดหมายแล้ว**. No automatic re
    results demonstrate the scanning and continuity goals. Do not rank unbuilt
    designs or merely choose the most decorative screenshot.
 
-### Approval Needed
+### Approval Recorded
 
-- Is this the intended workspace, with a shop-focused interpretation of the
-  clinic workflow, or should implementation happen in a clinic repository?
-- Approve the timeline-first layouts, six-color eucalyptus palette, Thai type
-  scale, plain copy and removal of generic effects.
-- Approve use of the existing CSS stack; a Tailwind/shadcn migration needs a
-  separate decision because those libraries are not present here.
+The user confirmed this shop is the intended workspace. The implementation uses
+the approved visual direction on the existing CSS stack. Clinic entities and a
+Tailwind/shadcn migration remain excluded.
 
-**Stop here. This audit and plan do not approve Step 3.**
+## 11. Implementation Record
+
+- Shell: compact text navigation; brand once; no page eyebrows or glass header.
+- Dashboard: today's time-aligned job rows first. Owner financial reports are
+  secondary and expandable; admin financial visibility remains restricted.
+- Bookings: selected-day appointment book, seven-day navigation, mobile agenda,
+  explicit status labels and a current-time rule behind appointment text.
+- Customer profile: contact/next/last service context before histories, mobile
+  history rows with visible status/amounts, and reuse of the existing booking form.
+- Orders: quiet summaries, named transition commands, readable vertical mobile
+  timeline, all item amounts visible, and one active detail/confirmation surface.
+- Stock: visible receive/issue commands, no KPI tiles and a mobile signed ledger.
+- Login: one compact form; original fake credentials/roles unchanged.
+- Error feedback: service errors appear in the active native dialog and receive
+  focus, rather than being hidden behind its backdrop. UI-only error state was
+  added to the existing provider; the service interface is unchanged.
+- UI clocks refresh once per minute. They do not change any persisted job status.
+
+All shared/feature styles consume the central tokens. No clinic pages/entities,
+services, domain types, financial logic, inventory rules, booking rules or routes
+were changed. The existing quote document contents and calculations are retained.
+
+### Verification and Gallery
+
+Each numbered folder under `screenshots/redesign/` is a page iteration captured
+by `npm run screenshots` at actual 1440px/390px. The final set has 80 images,
+including secondary reporting and booking from customer profiles. Original
+portfolio and audit images remain untouched.
+
+`npm run gallery` generates `gallery/index.html` from the final manifest. It is
+a static local gallery, not an application route. Prefer:
+
+1. `desktop/02-dashboard.png`: current customer/time/staff/state is primary,
+   while evening financial reporting stays available without competing with work.
+2. `desktop/16-booking-day.png`: four named technician columns align to a real
+   hour/half-hour grid; neutral blocks carry only their semantic status indicator.
+3. `mobile/15-booking-agenda.png`: appointments are readable without sideways
+   scrolling, with a clear technician and actionable customer identity.
+4. `desktop/23-customer-services.png`: contact, future booking context and last
+   completed service connect to actual history instead of a KPI-card profile.
+5. `mobile/20-booking-conflict.png`: explains the blocked save inside the form.
+   Use as supporting proof of a real workflow, not the portfolio cover image.
+
+Automated gates: unchanged domain/service tests, all browser workflow tests,
+axe WCAG A/AA checks on working pages and detail forms, visible keyboard focus,
+native-dialog focus/escape, mobile drawer keyboard behavior and reduced motion.
+These checks do not claim every possible data/browser state is WCAG-certified;
+Safari/Firefox and assistive-technology user testing remain manual.

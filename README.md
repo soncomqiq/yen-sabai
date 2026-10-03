@@ -8,6 +8,22 @@ are fictional. This is not production software or a tax/invoicing system.
 
 ## English
 
+### Approved UI Redesign
+
+The shop now uses a timeline-first working dashboard, neutral appointment book,
+mobile agenda, context-led customer history, explicit stock/order actions and
+in-dialog rule errors. One CSS token source owns the palette/type/spacing.
+Domain models, services, rules and hash routes are unchanged.
+
+```sh
+CAPTURE_OUTPUT_DIR=screenshots/redesign/final npm run screenshots
+npm run gallery
+```
+
+With the dev server running, view http://127.0.0.1:5173/gallery/index.html.
+This static local gallery is not deployed as an app route. See
+[design and audit](docs/DESIGN.md) for decisions, visual comparisons and image recommendations.
+
 ### Run Locally
 
 Requires Node.js 22.12+ (or 24+) and npm.

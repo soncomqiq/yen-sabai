@@ -198,7 +198,9 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByLabel("เหตุผล / เลขที่อ้างอิง", { exact: true })
     .fill("QA รับเข้า");
-  await page.getByRole("button", { name: "บันทึกรับเข้า", exact: true }).click();
+  await page
+    .getByRole("button", { name: "บันทึกรับเข้า", exact: true })
+    .click();
   await expect(page.getByRole("status")).toContainText("รับสินค้าเข้า");
   await page
     .getByRole("button", { name: "เบิกออก QA-001", exact: true })
@@ -207,14 +209,18 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByLabel("เหตุผล / เลขที่อ้างอิง", { exact: true })
     .fill("QA เบิก");
-  await page.getByRole("button", { name: "บันทึกเบิกออก", exact: true }).click();
+  await page
+    .getByRole("button", { name: "บันทึกเบิกออก", exact: true })
+    .click();
   await expect(page.getByRole("alert")).toContainText("ไม่สามารถเบิก");
   expect(
     (await snapshot(page)).products.find((product) => product.sku === "QA-001")!
       .stock,
   ).toBe(5);
   await page.getByLabel("จำนวน (เครื่อง)", { exact: true }).fill("1");
-  await page.getByRole("button", { name: "บันทึกเบิกออก", exact: true }).click();
+  await page
+    .getByRole("button", { name: "บันทึกเบิกออก", exact: true })
+    .click();
   await expect(page.getByRole("status")).toContainText("เบิกสินค้าออก");
   await page
     .getByRole("button", { name: "ประวัติ QA-001", exact: true })
@@ -256,7 +262,11 @@ test("product form, stock rules, order creation, status flow, cancellation and p
     .getByRole("button", { name: "สร้างคำสั่งซื้อ", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText("ตัดสต็อก");
-  for (const [name, action] of [["ชำระแล้ว", "บันทึกการชำระเงิน"], ["รอติดตั้ง/จัดส่ง", "เตรียมติดตั้งหรือจัดส่ง"], ["สำเร็จ", "บันทึกการส่งมอบ"]]) {
+  for (const [name, action] of [
+    ["ชำระแล้ว", "บันทึกการชำระเงิน"],
+    ["รอติดตั้ง/จัดส่ง", "เตรียมติดตั้งหรือจัดส่ง"],
+    ["สำเร็จ", "บันทึกการส่งมอบ"],
+  ]) {
     await page
       .locator("dialog")
       .getByRole("button", { name: action, exact: true })
@@ -288,7 +298,9 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByRole("button", { name: "ยกเลิกคำสั่งซื้อ", exact: true })
     .click();
-  await page.getByRole("button", { name: "ยกเลิกคำสั่งซื้อ", exact: true }).click();
+  await page
+    .getByRole("button", { name: "ยกเลิกคำสั่งซื้อ", exact: true })
+    .click();
   await expect(page.getByRole("status")).toContainText("คืนสต็อก");
   expect(
     (await snapshot(page)).products.find((item) => item.id === product.id)!
@@ -310,9 +322,7 @@ test("booking creation and rescheduling reject conflicts and allow adjacency", a
   await page.getByRole("button", { name: "วัน", exact: true }).click();
   const original = (await snapshot(page)).bookings[28],
     input = (value: string) => format(new Date(value), "yyyy-MM-dd'T'HH:mm");
-  await page
-    .getByRole("button", { name: "เพิ่มนัดหมาย", exact: true })
-    .click();
+  await page.getByRole("button", { name: "เพิ่มนัดหมาย", exact: true }).click();
   await page.getByLabel("ลูกค้า", { exact: true }).selectOption("customer-1");
   await page
     .getByLabel("ช่างผู้รับผิดชอบ", { exact: true })
@@ -344,9 +354,7 @@ test("booking creation and rescheduling reject conflicts and allow adjacency", a
     .locator(".day-job")
     .last()
     .click();
-  await page
-    .getByRole("button", { name: "แก้ไขนัดหมาย", exact: true })
-    .click();
+  await page.getByRole("button", { name: "แก้ไขนัดหมาย", exact: true }).click();
   await page
     .getByLabel("เริ่มงาน", { exact: true })
     .fill(input(original.start));
@@ -405,7 +413,9 @@ test("roles, guarded direct links, own job completion and screenshot mode", asyn
   await expect(
     page.getByRole("button", { name: "แก้ไขนัดหมาย", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "บันทึกงานเสร็จ", exact: true }).click();
+  await page
+    .getByRole("button", { name: "บันทึกงานเสร็จ", exact: true })
+    .click();
   await expect(page.getByRole("status")).toContainText("เปลี่ยนเป็น เสร็จ");
   await closeDialog(page);
   await noOverflow(page);
@@ -434,8 +444,12 @@ test("customer purchase and service histories and empty history states", async (
   await login(page);
   await page.goto("./#/customers");
   await page.locator(".customer-name").first().click();
-  await expect(page.getByRole('tab', { name: 'ประวัติงานบริการ', exact: true })).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('tab', { name: 'ประวัติซื้อสินค้า', exact: true }).click();
+  await expect(
+    page.getByRole("tab", { name: "ประวัติงานบริการ", exact: true }),
+  ).toHaveAttribute("aria-selected", "true");
+  await page
+    .getByRole("tab", { name: "ประวัติซื้อสินค้า", exact: true })
+    .click();
   await expect(page.getByRole("dialog")).toContainText("ยอดซื้อที่ชำระแล้ว");
   await expect(
     page.getByRole("tab", { name: "ประวัติซื้อสินค้า", exact: true }),
@@ -448,10 +462,14 @@ test("customer purchase and service histories and empty history states", async (
   ).toHaveAttribute("aria-selected", "true");
   await noOverflow(page);
   await page.screenshot({ path: info.outputPath("customer-detail.png") });
-  const profileName = await page.locator('.customer-profile h2').innerText();
-  const profileId = (await snapshot(page)).customers.find(customer => customer.name === profileName)!.id;
-  await page.getByRole('button', { name: 'เพิ่มนัดหมาย', exact: true }).click();
-  await expect(page.getByLabel('ลูกค้า', { exact: true })).toHaveValue(profileId);
+  const profileName = await page.locator(".customer-profile h2").innerText();
+  const profileId = (await snapshot(page)).customers.find(
+    (customer) => customer.name === profileName,
+  )!.id;
+  await page.getByRole("button", { name: "เพิ่มนัดหมาย", exact: true }).click();
+  await expect(page.getByLabel("ลูกค้า", { exact: true })).toHaveValue(
+    profileId,
+  );
   await closeDialog(page);
   await closeDialog(page);
   const state = await snapshot(page),
@@ -464,7 +482,9 @@ test("customer purchase and service histories and empty history states", async (
       .getByRole("textbox", { name: "ค้นหาลูกค้า", exact: true })
       .fill(customer.name);
     await page.locator(".customer-name").click();
-    await page.getByRole('tab', { name: 'ประวัติซื้อสินค้า', exact: true }).click();
+    await page
+      .getByRole("tab", { name: "ประวัติซื้อสินค้า", exact: true })
+      .click();
     await expect(
       page.getByRole("heading", {
         name: "ยังไม่มีประวัติซื้อสินค้า",

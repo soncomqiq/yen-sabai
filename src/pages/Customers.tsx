@@ -1,10 +1,6 @@
 import { useState } from "react";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import { useShop } from "../components/DataProvider";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { useShop } from "../components/ShopContext";
 import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import {
@@ -220,90 +216,209 @@ function CustomerDetail({
       ["paid", "fulfillment", "completed"].includes(order.status),
     )
     .reduce((sum, order) => sum + orderTotal(order), 0);
-  const nextJob = [...jobs].filter(job => job.status !== 'done' && new Date(job.start) >= today).sort((left, right) => left.start.localeCompare(right.start))[0];
-  const lastJob = jobs.find(job => job.status === 'done');
+  const nextJob = [...jobs]
+    .filter((job) => job.status !== "done" && new Date(job.start) >= today)
+    .sort((left, right) => left.start.localeCompare(right.start))[0];
+  const lastJob = jobs.find((job) => job.status === "done");
   return (
     <>
-      {!order && !job && !booking && <Modal title="รายละเอียดลูกค้า" onClose={onClose} wide>
-        <div className="customer-profile">
-          <div>
-            <h2>{customer.name}</h2>
-            <p>
-              <a href={`tel:${customer.phone}`}>{customer.phone}</a>
-            </p>
-            <p>
-              {customer.address}
-            </p>
+      {!order && !job && !booking && (
+        <Modal title="รายละเอียดลูกค้า" onClose={onClose} wide>
+          <div className="customer-profile">
+            <div>
+              <h2>{customer.name}</h2>
+              <p>
+                <a href={`tel:${customer.phone}`}>{customer.phone}</a>
+              </p>
+              <p>{customer.address}</p>
+            </div>
           </div>
-        </div>
-        <div className="customer-context"><section><h3>นัดถัดไป</h3>{nextJob ? <><p>{dateText(nextJob.start, 'd MMM yyyy HH:mm')}</p><p>{bookingTypeLabels[nextJob.type]} {state!.technicians.find(tech => tech.id === nextJob.technicianId)?.name}</p><button className="text-link" onClick={() => setJob(nextJob.id)}>ดูนัดหมาย</button></> : <p className="muted">ยังไม่มีนัดหมายครั้งถัดไป</p>}</section><section><h3>งานบริการล่าสุด</h3>{lastJob ? <><p>{dateText(lastJob.start, 'd MMM yyyy')}</p><p>{bookingTypeLabels[lastJob.type]} {state!.technicians.find(tech => tech.id === lastJob.technicianId)?.name}</p><button className="text-link" onClick={() => setJob(lastJob.id)}>ดูงานบริการ</button></> : <p className="muted">ยังไม่มีงานบริการที่เสร็จแล้ว</p>}</section></div>
-        <div className="profile-actions"><button className="secondary" onClick={() => setBooking(true)}>เพิ่มนัดหมาย</button></div>
-        <div className="history-tabs" role="tablist" aria-label="ประวัติลูกค้า">
-          <button
-            role="tab"
-            id="purchase-tab"
-            aria-controls="purchase-history"
-            aria-selected={tab === "purchase"}
-            className={tab === "purchase" ? "active" : ""}
-            onClick={() => setTab("purchase")}
+          <div className="customer-context">
+            <section>
+              <h3>นัดถัดไป</h3>
+              {nextJob ? (
+                <>
+                  <p>{dateText(nextJob.start, "d MMM yyyy HH:mm")}</p>
+                  <p>
+                    {bookingTypeLabels[nextJob.type]}{" "}
+                    {
+                      state!.technicians.find(
+                        (tech) => tech.id === nextJob.technicianId,
+                      )?.name
+                    }
+                  </p>
+                  <button
+                    className="text-link"
+                    onClick={() => setJob(nextJob.id)}
+                  >
+                    ดูนัดหมาย
+                  </button>
+                </>
+              ) : (
+                <p className="muted">ยังไม่มีนัดหมายครั้งถัดไป</p>
+              )}
+            </section>
+            <section>
+              <h3>งานบริการล่าสุด</h3>
+              {lastJob ? (
+                <>
+                  <p>{dateText(lastJob.start, "d MMM yyyy")}</p>
+                  <p>
+                    {bookingTypeLabels[lastJob.type]}{" "}
+                    {
+                      state!.technicians.find(
+                        (tech) => tech.id === lastJob.technicianId,
+                      )?.name
+                    }
+                  </p>
+                  <button
+                    className="text-link"
+                    onClick={() => setJob(lastJob.id)}
+                  >
+                    ดูงานบริการ
+                  </button>
+                </>
+              ) : (
+                <p className="muted">ยังไม่มีงานบริการที่เสร็จแล้ว</p>
+              )}
+            </section>
+          </div>
+          <div className="profile-actions">
+            <button className="secondary" onClick={() => setBooking(true)}>
+              เพิ่มนัดหมาย
+            </button>
+          </div>
+          <div
+            className="history-tabs"
+            role="tablist"
+            aria-label="ประวัติลูกค้า"
           >
-            ประวัติซื้อสินค้า
-          </button>
-          <button
-            role="tab"
-            id="service-tab"
-            aria-controls="service-history"
-            aria-selected={tab === "service"}
-            className={tab === "service" ? "active" : ""}
-            onClick={() => setTab("service")}
+            <button
+              role="tab"
+              id="purchase-tab"
+              aria-controls="purchase-history"
+              aria-selected={tab === "purchase"}
+              className={tab === "purchase" ? "active" : ""}
+              onClick={() => setTab("purchase")}
+            >
+              ประวัติซื้อสินค้า
+            </button>
+            <button
+              role="tab"
+              id="service-tab"
+              aria-controls="service-history"
+              aria-selected={tab === "service"}
+              className={tab === "service" ? "active" : ""}
+              onClick={() => setTab("service")}
+            >
+              ประวัติงานบริการ
+            </button>
+          </div>
+          <div
+            role="tabpanel"
+            id={tab === "purchase" ? "purchase-history" : "service-history"}
+            aria-labelledby={
+              tab === "purchase" ? "purchase-tab" : "service-tab"
+            }
           >
-            ประวัติงานบริการ
-          </button>
-        </div>
-        <div
-          role="tabpanel"
-          id={tab === "purchase" ? "purchase-history" : "service-history"}
-          aria-labelledby={tab === "purchase" ? "purchase-tab" : "service-tab"}
-        >
-          {tab === 'purchase' && <p className="history-summary">คำสั่งซื้อ {orders.length} รายการ <span>ยอดซื้อที่ชำระแล้ว <strong className="numeric">{money(total)}</strong></span></p>}
-          {tab === "purchase" ? (
-            orders.length ? (
+            {tab === "purchase" && (
+              <p className="history-summary">
+                คำสั่งซื้อ {orders.length} รายการ{" "}
+                <span>
+                  ยอดซื้อที่ชำระแล้ว{" "}
+                  <strong className="numeric">{money(total)}</strong>
+                </span>
+              </p>
+            )}
+            {tab === "purchase" ? (
+              orders.length ? (
+                <div className="table-scroll">
+                  <table className="history-table purchase-history-table">
+                    <thead>
+                      <tr>
+                        <th>เลขที่</th>
+                        <th>วันที่</th>
+                        <th>สถานะ</th>
+                        <th className="numeric">ยอดรวม</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order) => (
+                        <tr key={order.id}>
+                          <td>
+                            <button
+                              className="text-link"
+                              onClick={() => setOrder(order.id)}
+                            >
+                              {order.id}
+                            </button>
+                          </td>
+                          <td>{dateText(order.createdAt)}</td>
+                          <td>
+                            <span className={`badge ${order.status}`}>
+                              {orderLabels[order.status]}
+                            </span>
+                          </td>
+                          <td className="numeric">
+                            {money(orderTotal(order))}
+                          </td>
+                          <td>
+                            <button
+                              className="text-link"
+                              aria-label={`ดู ${order.id}`}
+                              onClick={() => setOrder(order.id)}
+                            >
+                              ดูคำสั่งซื้อ
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <EmptyState
+                  title="ยังไม่มีประวัติซื้อสินค้า"
+                  detail="คำสั่งซื้อของลูกค้ารายนี้จะแสดงที่นี่"
+                />
+              )
+            ) : jobs.length ? (
               <div className="table-scroll">
-                <table className="history-table purchase-history-table">
+                <table className="history-table service-history-table">
                   <thead>
                     <tr>
-                      <th>เลขที่</th>
-                      <th>วันที่</th>
+                      <th>ประเภทงาน</th>
+                      <th>วันที่ / เวลา</th>
+                      <th>ช่าง</th>
                       <th>สถานะ</th>
-                      <th className="numeric">ยอดรวม</th>
                       <th />
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map((order) => (
-                      <tr key={order.id}>
+                    {jobs.map((job) => (
+                      <tr key={job.id}>
+                        <td>{bookingTypeLabels[job.type]}</td>
+                        <td>{dateText(job.start, "d MMM yy HH:mm")}</td>
                         <td>
-                          <button
-                            className="text-link"
-                            onClick={() => setOrder(order.id)}
-                          >
-                            {order.id}
-                          </button>
+                          {
+                            state!.technicians.find(
+                              (tech) => tech.id === job.technicianId,
+                            )?.name
+                          }
                         </td>
-                        <td>{dateText(order.createdAt)}</td>
                         <td>
-                          <span className={`badge ${order.status}`}>
-                            {orderLabels[order.status]}
+                          <span className={`badge ${job.status}`}>
+                            {bookingLabels[job.status]}
                           </span>
                         </td>
-                        <td className="numeric">{money(orderTotal(order))}</td>
                         <td>
                           <button
                             className="text-link"
-                            aria-label={`ดู ${order.id}`}
-                            onClick={() => setOrder(order.id)}
+                            aria-label={`ดู ${job.id}`}
+                            onClick={() => setJob(job.id)}
                           >
-                            ดูคำสั่งซื้อ
+                            ดูงาน
                           </button>
                         </td>
                       </tr>
@@ -313,62 +428,19 @@ function CustomerDetail({
               </div>
             ) : (
               <EmptyState
-                title="ยังไม่มีประวัติซื้อสินค้า"
-                detail="คำสั่งซื้อของลูกค้ารายนี้จะแสดงที่นี่"
+                title="ยังไม่มีประวัติงานบริการ"
+                detail="นัดหมายของลูกค้ารายนี้จะแสดงที่นี่"
               />
-            )
-          ) : jobs.length ? (
-            <div className="table-scroll">
-              <table className="history-table service-history-table">
-                <thead>
-                  <tr>
-                    <th>ประเภทงาน</th>
-                    <th>วันที่ / เวลา</th>
-                    <th>ช่าง</th>
-                    <th>สถานะ</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {jobs.map((job) => (
-                    <tr key={job.id}>
-                      <td>{bookingTypeLabels[job.type]}</td>
-                      <td>{dateText(job.start, "d MMM yy HH:mm")}</td>
-                      <td>
-                        {
-                          state!.technicians.find(
-                            (tech) => tech.id === job.technicianId,
-                          )?.name
-                        }
-                      </td>
-                      <td>
-                        <span className={`badge ${job.status}`}>
-                          {bookingLabels[job.status]}
-                        </span>
-                      </td>
-                      <td>
-                        <button
-                          className="text-link"
-                          aria-label={`ดู ${job.id}`}
-                          onClick={() => setJob(job.id)}
-                        >
-                          ดูงาน
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <EmptyState
-              title="ยังไม่มีประวัติงานบริการ"
-              detail="นัดหมายของลูกค้ารายนี้จะแสดงที่นี่"
-            />
-          )}
-        </div>
-      </Modal>}
-      {booking && <BookingForm value={{ date: today, customerId }} onClose={() => setBooking(false)} />}
+            )}
+          </div>
+        </Modal>
+      )}
+      {booking && (
+        <BookingForm
+          value={{ date: today, customerId }}
+          onClose={() => setBooking(false)}
+        />
+      )}
       {order && <OrderDetail orderId={order} onClose={() => setOrder(null)} />}
       {job && <BookingDetail bookingId={job} onClose={() => setJob(null)} />}
     </>

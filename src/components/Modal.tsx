@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
-import { useShop } from './DataProvider';
+import { useShop } from "./ShopContext";
 export function Modal({
   title,
   onClose,
@@ -26,9 +26,17 @@ export function Modal({
       clearActionError();
       document.body.style.overflow = overflow;
     };
-  }, []);
-  const isActive = ref.current === Array.from(document.querySelectorAll('dialog[open]')).at(-1);
-  useEffect(() => { if (actionError && isActive) { errorRef.current?.focus(); errorRef.current?.scrollIntoView({ block: 'nearest' }); } }, [actionError, isActive]);
+  }, [clearActionError]);
+  useEffect(() => {
+    if (
+      actionError &&
+      ref.current ===
+        Array.from(document.querySelectorAll("dialog[open]")).at(-1)
+    ) {
+      errorRef.current?.focus();
+      errorRef.current?.scrollIntoView({ block: "nearest" });
+    }
+  }, [actionError]);
   return (
     <dialog
       ref={ref}
@@ -49,7 +57,20 @@ export function Modal({
           <X />
         </button>
       </div>
-      <div className="modal-body">{actionError && isActive && <div ref={errorRef} tabIndex={-1} className="error-message" role="alert"><strong>บันทึกไม่ได้</strong><p>{actionError}</p></div>}{children}</div>
+      <div className="modal-body">
+        {actionError && (
+          <div
+            ref={errorRef}
+            tabIndex={-1}
+            className="error-message"
+            role="alert"
+          >
+            <strong>บันทึกไม่ได้</strong>
+            <p>{actionError}</p>
+          </div>
+        )}
+        {children}
+      </div>
     </dialog>
   );
 }

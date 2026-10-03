@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import {
   HashRouter,
   NavLink,
@@ -33,7 +40,7 @@ interface Session {
   logout: () => void;
 }
 const SessionContext = createContext<Session | null>(null);
-export function useSession() {
+function useSession() {
   return useContext(SessionContext)!;
 }
 function DemoBanner() {
@@ -66,7 +73,10 @@ function Login({ onLogin }: { onLogin: (user: User) => void }) {
           <div className="brand-mark">
             <AirVent size={28} />
           </div>
-          <div><h1>ร้านเย็นสบาย</h1><p className="muted">แอร์แอนด์เซอร์วิส</p></div>
+          <div>
+            <h1>ร้านเย็นสบาย</h1>
+            <p className="muted">แอร์แอนด์เซอร์วิส</p>
+          </div>
         </section>
         <section className="login-form">
           <h2>เข้าสู่ระบบ</h2>
@@ -151,23 +161,49 @@ function Login({ onLogin }: { onLogin: (user: User) => void }) {
 function Shell({ children }: { children: ReactNode }) {
   const { user, logout } = useSession();
   const [open, setOpen] = useState(false);
-  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 700px)').matches);
-  const navRef = useRef<HTMLElement>(null), menuRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => { const media = window.matchMedia('(max-width: 700px)'); const resize = () => setMobile(media.matches); media.addEventListener('change', resize); return () => media.removeEventListener('change', resize); }, []);
+  const [mobile, setMobile] = useState(
+    () => window.matchMedia("(max-width: 700px)").matches,
+  );
+  const navRef = useRef<HTMLElement>(null),
+    menuRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 700px)");
+    const resize = () => setMobile(media.matches);
+    media.addEventListener("change", resize);
+    return () => media.removeEventListener("change", resize);
+  }, []);
   useEffect(() => {
     if (!open || !mobile) return;
     const navigation = navRef.current!;
-    const controls = () => Array.from(navigation.querySelectorAll<HTMLElement>('a,button')).filter(element => element.getClientRects().length > 0);
+    const menu = menuRef.current;
+    const controls = () =>
+      Array.from(navigation.querySelectorAll<HTMLElement>("a,button")).filter(
+        (element) => element.getClientRects().length > 0,
+      );
     controls()[0]?.focus();
     function keyboard(event: KeyboardEvent) {
-      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); return; }
-      if (event.key !== 'Tab') return;
-      const elements = controls(), first = elements[0], last = elements.at(-1);
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const elements = controls(),
+        first = elements[0],
+        last = elements.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
     }
-    navigation.addEventListener('keydown', keyboard);
-    return () => { navigation.removeEventListener('keydown', keyboard); menuRef.current?.focus(); };
+    navigation.addEventListener("keydown", keyboard);
+    return () => {
+      navigation.removeEventListener("keydown", keyboard);
+      menu?.focus();
+    };
   }, [open, mobile]);
   const location = useLocation();
   const title =
@@ -184,7 +220,15 @@ function Shell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
           />
         )}
-        <aside ref={navRef} id="shop-navigation" className={`sidebar ${open ? "open" : ""}`} inert={mobile && !open} role={mobile && open ? 'dialog' : undefined} aria-modal={mobile && open ? true : undefined} aria-label="เมนูร้าน">
+        <aside
+          ref={navRef}
+          id="shop-navigation"
+          className={`sidebar ${open ? "open" : ""}`}
+          inert={mobile && !open}
+          role={mobile && open ? "dialog" : undefined}
+          aria-modal={mobile && open ? true : undefined}
+          aria-label="เมนูร้าน"
+        >
           <NavLink
             to={user.role === "technician" ? "/bookings" : "/dashboard"}
             className="brand"

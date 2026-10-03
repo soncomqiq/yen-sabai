@@ -7,7 +7,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { Product, ProductDraft, Category } from "../domain/types";
-import { useShop } from "../components/DataProvider";
+import { useShop } from "../components/ShopContext";
 import { EmptyState, PageHeading, Skeleton } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { money, number, dateText } from "../lib/format";
@@ -81,7 +81,11 @@ export default function Products() {
     <>
       <PageHeading
         title="สินค้าและสต็อก"
-        subtitle={low ? `สินค้าถึงจุดสั่งซื้อ ${lowCount} รายการ` : `สินค้าทั้งหมด ${state.products.length} รายการ`}
+        subtitle={
+          low
+            ? `สินค้าถึงจุดสั่งซื้อ ${lowCount} รายการ`
+            : `สินค้าทั้งหมด ${state.products.length} รายการ`
+        }
         actions={
           <>
             <button className="secondary" onClick={download}>
@@ -93,7 +97,22 @@ export default function Products() {
           </>
         }
       />
-      <p className="list-summary">คงเหลือรวม {number(state.products.reduce((sum, product) => sum + product.stock, 0))} หน่วย <button className="text-link" onClick={() => { setLow(!low); setPage(1); }}>{low ? 'ดูสินค้าทั้งหมด' : `ถึงจุดสั่งซื้อ ${lowCount} รายการ`}</button></p>
+      <p className="list-summary">
+        คงเหลือรวม{" "}
+        {number(
+          state.products.reduce((sum, product) => sum + product.stock, 0),
+        )}{" "}
+        หน่วย{" "}
+        <button
+          className="text-link"
+          onClick={() => {
+            setLow(!low);
+            setPage(1);
+          }}
+        >
+          {low ? "ดูสินค้าทั้งหมด" : `ถึงจุดสั่งซื้อ ${lowCount} รายการ`}
+        </button>
+      </p>
       <section className="panel">
         <div className="list-toolbar">
           <div className="search-input">
@@ -374,7 +393,11 @@ export default function Products() {
                 ยกเลิกการแก้ไข
               </button>
               <button className="primary" disabled={busy}>
-                {busy ? "กำลังบันทึก…" : stock.mode === 'in' ? 'บันทึกรับเข้า' : 'บันทึกเบิกออก'}
+                {busy
+                  ? "กำลังบันทึก…"
+                  : stock.mode === "in"
+                    ? "บันทึกรับเข้า"
+                    : "บันทึกเบิกออก"}
               </button>
             </div>
           </form>

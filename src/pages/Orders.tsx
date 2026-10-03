@@ -1,14 +1,9 @@
 import { useState } from "react";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Trash2,
-} from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import type { OrderStatus, OrderDraft } from "../domain/types";
 import { orderLabels, orderTotal } from "../domain/types";
 import { transitions } from "../domain/rules";
-import { useShop } from "../components/DataProvider";
+import { useShop } from "../components/ShopContext";
 import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
 import { Modal } from "../components/Modal";
 import { dateText, money } from "../lib/format";
@@ -67,7 +62,11 @@ export default function Orders() {
     <>
       <PageHeading
         title="คำสั่งซื้อ"
-        subtitle={status === 'all' ? `คำสั่งซื้อทั้งหมด ${state.orders.length} รายการ` : `พบ ${filtered.length} รายการที่${orderLabels[status as OrderStatus]}`}
+        subtitle={
+          status === "all"
+            ? `คำสั่งซื้อทั้งหมด ${state.orders.length} รายการ`
+            : `พบ ${filtered.length} รายการที่${orderLabels[status as OrderStatus]}`
+        }
         actions={
           <>
             <button className="secondary" onClick={download}>
@@ -79,7 +78,20 @@ export default function Orders() {
           </>
         }
       />
-      <p className="list-summary">รอดำเนินการ {state.orders.filter(order => !['completed', 'cancelled'].includes(order.status)).length} รายการ <span>ส่งมอบสำเร็จ {state.orders.filter(order => order.status === 'completed').length} รายการ</span></p>
+      <p className="list-summary">
+        รอดำเนินการ{" "}
+        {
+          state.orders.filter(
+            (order) => !["completed", "cancelled"].includes(order.status),
+          ).length
+        }{" "}
+        รายการ{" "}
+        <span>
+          ส่งมอบสำเร็จ{" "}
+          {state.orders.filter((order) => order.status === "completed").length}{" "}
+          รายการ
+        </span>
+      </p>
       <section className="panel">
         <div className="list-toolbar">
           <div className="search-input">
@@ -356,7 +368,13 @@ function OrderForm({
                     ))}
                   </select>
                   {product && (
-                    <span className="selected-product"><strong>{product.name}</strong><small className="muted">{money(product.price)} / {product.unit} คงเหลือ {product.stock}</small></span>
+                    <span className="selected-product">
+                      <strong>{product.name}</strong>
+                      <small className="muted">
+                        {money(product.price)} / {product.unit} คงเหลือ{" "}
+                        {product.stock}
+                      </small>
+                    </span>
                   )}
                 </label>
                 <label>
@@ -451,104 +469,112 @@ export function OrderDetail({
       : ["pending", "paid", "fulfillment", "completed"];
   return (
     <>
-      {!quotation && !cancel && <Modal
-        title={`คำสั่งซื้อ ${order.id}`}
-        onClose={() => {
-          if (!busy) onClose();
-        }}
-        wide
-      >
-        <div className="order-detail-head">
-          <div>
-            <strong>{customer.name}</strong>
-            <p className="muted">{customer.phone}</p>
-            <p className="muted">{customer.address}</p>
+      {!quotation && !cancel && (
+        <Modal
+          title={`คำสั่งซื้อ ${order.id}`}
+          onClose={() => {
+            if (!busy) onClose();
+          }}
+          wide
+        >
+          <div className="order-detail-head">
+            <div>
+              <strong>{customer.name}</strong>
+              <p className="muted">{customer.phone}</p>
+              <p className="muted">{customer.address}</p>
+            </div>
+            <div>
+              <span className={`badge ${order.status}`}>
+                {orderLabels[order.status]}
+              </span>
+              <p className="muted">
+                {dateText(order.createdAt, "d MMM yyyy HH:mm")}
+              </p>
+            </div>
           </div>
-          <div>
-            <span className={`badge ${order.status}`}>
-              {orderLabels[order.status]}
-            </span>
-            <p className="muted">
-              {dateText(order.createdAt, "d MMM yyyy HH:mm")}
-            </p>
-          </div>
-        </div>
-        <div className="quotation-action">
-          <button className="secondary" onClick={() => setQuotation(true)}>
-            ใบเสนอราคา PDF
-          </button>
-        </div>
-        <ol className="timeline">
-          {steps.map((step, index) => {
-            const event = order.timeline.find((event) => event.status === step);
-            return (
-              <li key={`${step}-${index}`} className={event ? "reached" : ""}>
-                <span className="timeline-marker">{index + 1}</span>
-                <strong>{orderLabels[step]}</strong>
-                <small>
-                  {event ? dateText(event.at, "d MMM HH:mm") : "รอดำเนินการ"}
-                </small>
-              </li>
-            );
-          })}
-        </ol>
-        <div className="table-scroll">
-          <table className="order-items-table">
-            <thead>
-              <tr>
-                <th>สินค้า</th>
-                <th className="numeric">จำนวน</th>
-                <th className="numeric">ราคาต่อหน่วย</th>
-                <th className="numeric">รวม</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.items.map((item) => (
-                <tr key={item.productId}>
-                  <td className="wrap-cell">{item.name}</td>
-                  <td className="numeric">{item.quantity}</td>
-                  <td className="numeric">{money(item.unitPrice)}</td>
-                  <td className="numeric">
-                    {money(item.quantity * item.unitPrice)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="order-total">
-          <span>ยอดรวมทั้งหมด</span>
-          <strong>{money(orderTotal(order))}</strong>
-        </div>
-        <div className="dialog-actions">
-          {transitions[order.status].includes("cancelled") && (
-            <button
-              className="danger"
-              disabled={busy}
-              onClick={() => setCancel(true)}
-            >
-              ยกเลิกคำสั่งซื้อ
+          <div className="quotation-action">
+            <button className="secondary" onClick={() => setQuotation(true)}>
+              ใบเสนอราคา PDF
             </button>
-          )}
-          {transitions[order.status]
-            .filter((status) => status !== "cancelled")
-            .map((status) => (
+          </div>
+          <ol className="timeline">
+            {steps.map((step, index) => {
+              const event = order.timeline.find(
+                (event) => event.status === step,
+              );
+              return (
+                <li key={`${step}-${index}`} className={event ? "reached" : ""}>
+                  <span className="timeline-marker">{index + 1}</span>
+                  <strong>{orderLabels[step]}</strong>
+                  <small>
+                    {event ? dateText(event.at, "d MMM HH:mm") : "รอดำเนินการ"}
+                  </small>
+                </li>
+              );
+            })}
+          </ol>
+          <div className="table-scroll">
+            <table className="order-items-table">
+              <thead>
+                <tr>
+                  <th>สินค้า</th>
+                  <th className="numeric">จำนวน</th>
+                  <th className="numeric">ราคาต่อหน่วย</th>
+                  <th className="numeric">รวม</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order.items.map((item) => (
+                  <tr key={item.productId}>
+                    <td className="wrap-cell">{item.name}</td>
+                    <td className="numeric">{item.quantity}</td>
+                    <td className="numeric">{money(item.unitPrice)}</td>
+                    <td className="numeric">
+                      {money(item.quantity * item.unitPrice)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="order-total">
+            <span>ยอดรวมทั้งหมด</span>
+            <strong>{money(orderTotal(order))}</strong>
+          </div>
+          <div className="dialog-actions">
+            {transitions[order.status].includes("cancelled") && (
               <button
-                key={status}
-                className="primary"
+                className="danger"
                 disabled={busy}
-                onClick={() =>
-                  run(
-                    () => service.transitionOrder(user, order.id, status),
-                    `เปลี่ยนเป็น ${orderLabels[status]} แล้ว`,
-                  )
-                }
+                onClick={() => setCancel(true)}
               >
-                {status === 'paid' ? 'บันทึกการชำระเงิน' : status === 'fulfillment' ? 'เตรียมติดตั้งหรือจัดส่ง' : 'บันทึกการส่งมอบ'}
+                ยกเลิกคำสั่งซื้อ
               </button>
-            ))}
-        </div>
-      </Modal>}
+            )}
+            {transitions[order.status]
+              .filter((status) => status !== "cancelled")
+              .map((status) => (
+                <button
+                  key={status}
+                  className="primary"
+                  disabled={busy}
+                  onClick={() =>
+                    run(
+                      () => service.transitionOrder(user, order.id, status),
+                      `เปลี่ยนเป็น ${orderLabels[status]} แล้ว`,
+                    )
+                  }
+                >
+                  {status === "paid"
+                    ? "บันทึกการชำระเงิน"
+                    : status === "fulfillment"
+                      ? "เตรียมติดตั้งหรือจัดส่ง"
+                      : "บันทึกการส่งมอบ"}
+                </button>
+              ))}
+          </div>
+        </Modal>
+      )}
       {quotation && (
         <QuotationDialog
           order={order}

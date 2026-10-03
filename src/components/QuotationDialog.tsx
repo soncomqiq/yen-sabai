@@ -3,7 +3,7 @@ import { Download, LoaderCircle } from "lucide-react";
 import type { Customer, Order } from "../domain/types";
 import { prepareQuotation } from "../lib/quotation";
 import { Modal } from "./Modal";
-import { useShop } from "./DataProvider";
+import { useShop } from "./ShopContext";
 import "./quotation.css";
 export function QuotationDialog({
   order,

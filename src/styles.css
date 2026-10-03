@@ -1109,7 +1109,10 @@ small {
   position: relative;
   overflow: hidden;
 }
-.login-brand .brand-mark{background:transparent;color:var(--accent)}
+.login-brand .brand-mark {
+  background: transparent;
+  color: var(--accent);
+}
 .login-brand .eyebrow {
   margin-top: var(--space-8);
   margin-bottom: var(--space-4);
