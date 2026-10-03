@@ -14,7 +14,6 @@ import {
   ShoppingBag,
   CalendarDays,
   Users,
-  LogOut,
   Menu,
   X,
   ArrowRight,
@@ -210,7 +209,6 @@ function Shell({ children }: { children: ReactNode }) {
           >
             <X />
           </button>
-          <p className="nav-caption">จัดการร้าน</p>
           <nav>
             {navItems
               .filter((item) => canAccessPage(user.role, item.path))
@@ -220,18 +218,16 @@ function Shell({ children }: { children: ReactNode }) {
                   to={`/${item.path}`}
                   onClick={() => setOpen(false)}
                 >
-                  <item.icon size={20} />
                   <span>{item.label}</span>
                 </NavLink>
               ))}
           </nav>
           <div className="sidebar-bottom">
             <div className="shop-status">
-              <span className="status-dot" /> ร้านเย็นสบาย{" "}
-              <small>สาขาบางนา</small>
+              สาขาบางนา
+              <small>ระบบจัดการร้าน</small>
             </div>
             <button className="logout-button" onClick={logout}>
-              <LogOut size={18} />
               ออกจากระบบ
             </button>
           </div>
@@ -247,11 +243,10 @@ function Shell({ children }: { children: ReactNode }) {
                 <Menu />
               </button>
               <span className="breadcrumb">
-                ร้านเย็นสบาย <span>/</span> <strong>{title}</strong>
+                <strong>{title}</strong>
               </span>
             </div>
             <div className="user-chip">
-              <span className="avatar">{user.name.slice(0, 1)}</span>
               <span>
                 <strong>{user.name}</strong>
                 <small>{roleLabels[user.role]}</small>
@@ -279,7 +274,6 @@ export function PageHeading({
   return (
     <div className="page-heading">
       <div>
-        <p className="eyebrow">ร้านเย็นสบาย</p>
         <h1>{title}</h1>
         {subtitle && <p className="muted">{subtitle}</p>}
       </div>
@@ -298,7 +292,6 @@ export function EmptyState({
 }) {
   return (
     <div className="empty-state">
-      <Package size={32} />
       <h3>{title}</h3>
       <p>{detail}</p>
       {action}
