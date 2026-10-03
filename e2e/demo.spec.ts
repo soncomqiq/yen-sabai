@@ -311,7 +311,7 @@ test("booking creation and rescheduling reject conflicts and allow adjacency", a
   const original = (await snapshot(page)).bookings[28],
     input = (value: string) => format(new Date(value), "yyyy-MM-dd'T'HH:mm");
   await page
-    .getByRole("button", { name: "นัดหมายงานใหม่", exact: true })
+    .getByRole("button", { name: "เพิ่มนัดหมาย", exact: true })
     .click();
   await page.getByLabel("ลูกค้า", { exact: true }).selectOption("customer-1");
   await page
@@ -345,7 +345,7 @@ test("booking creation and rescheduling reject conflicts and allow adjacency", a
     .last()
     .click();
   await page
-    .getByRole("button", { name: "แก้ไข / เลื่อนนัด", exact: true })
+    .getByRole("button", { name: "แก้ไขนัดหมาย", exact: true })
     .click();
   await page
     .getByLabel("เริ่มงาน", { exact: true })
@@ -392,7 +392,7 @@ test("roles, guarded direct links, own job completion and screenshot mode", asyn
   await expect(page.locator(".technician-heading")).toHaveCount(1);
   await expect(page.locator(".sidebar nav a")).toHaveCount(1);
   await expect(
-    page.getByRole("button", { name: "นัดหมายงานใหม่", exact: true }),
+    page.getByRole("button", { name: "เพิ่มนัดหมาย", exact: true }),
   ).toHaveCount(0);
   for (const route of ["dashboard", "products", "orders", "customers"]) {
     await page.goto(`./#/${route}`);
@@ -403,9 +403,9 @@ test("roles, guarded direct links, own job completion and screenshot mode", asyn
   await page.getByRole("button", { name: "วัน", exact: true }).click();
   await page.locator(".day-job").first().click();
   await expect(
-    page.getByRole("button", { name: "แก้ไข / เลื่อนนัด", exact: true }),
+    page.getByRole("button", { name: "แก้ไขนัดหมาย", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "ปิดงาน", exact: true }).click();
+  await page.getByRole("button", { name: "บันทึกงานเสร็จ", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("เปลี่ยนเป็น เสร็จ");
   await closeDialog(page);
   await noOverflow(page);

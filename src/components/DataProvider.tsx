@@ -17,6 +17,8 @@ interface ShopContextValue {
   service: ShopService;
   busy: boolean;
   error: string;
+  actionError: string;
+  clearActionError: () => void;
   run: (action: () => Promise<unknown>, message?: string) => Promise<boolean>;
   refresh: () => Promise<void>;
   notify: (message: string, error?: boolean) => void;
@@ -36,6 +38,7 @@ export function DataProvider({
     [state, setState] = useState<ShopState | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [actionError, setActionError] = useState(""),
     [toast, setToast] = useState<{
       id: number;
       message: string;
@@ -66,6 +69,11 @@ export function DataProvider({
     return () => clearTimeout(timer);
   }, [toast]);
   function notify(message: string, failure = false) {
+    if (failure && document.querySelector('dialog[open]')) {
+      setActionError(message);
+      setToast(null);
+      return;
+    }
     setToast({ id: Date.now(), message, error: failure });
   }
   async function run(
@@ -73,6 +81,7 @@ export function DataProvider({
     message = "บันทึกเรียบร้อยแล้ว",
   ) {
     if (busy) return false;
+    setActionError('');
     setBusy(true);
     try {
       await action();
@@ -93,7 +102,7 @@ export function DataProvider({
   }
   return (
     <ShopContext
-      value={{ user, state, service, busy, error, run, refresh, notify }}
+      value={{ user, state, service, busy, error, actionError, clearActionError: () => setActionError(''), run, refresh, notify }}
     >
       {error ? (
         <div className="error-panel" role="alert">

@@ -11,14 +11,6 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  CalendarDays,
-  CalendarRange,
-  Clock3,
-  MapPin,
-  Phone,
-  Pencil,
-  ArrowRight,
-  Wrench,
 } from "lucide-react";
 import type {
   Booking,
@@ -41,7 +33,8 @@ export default function Bookings() {
   const { state, user } = useShop();
   const [today] = useState(() => new Date());
   const [date, setDate] = useState(() => startOfDay(new Date())),
-    [mode, setMode] = useState<"week" | "day">("week"),
+    [mode, setMode] = useState<"week" | "day">("day"),
+    [agenda, setAgenda] = useState(() => window.matchMedia('(max-width: 700px)').matches),
     [status, setStatus] = useState("all"),
     [detail, setDetail] = useState<string | null>(null),
     [editing, setEditing] = useState<Booking | NewJob | null>(null);
@@ -84,21 +77,19 @@ export default function Bookings() {
         title={office ? "ตารางงานช่าง" : "งานของฉัน"}
         subtitle={
           office
-            ? "วางแผนทีมช่าง ให้ทุกนัดเป็นไปอย่างราบรื่น"
-            : `${user.name} · งานที่ได้รับมอบหมาย`
+            ? dateText(date, 'EEEE d MMMM yyyy')
+            : `${user.name} งานที่ได้รับมอบหมาย`
         }
         actions={
           office && (
             <button className="primary" onClick={() => setEditing({ date })}>
-              <Plus size={17} />
-              นัดหมายงานใหม่
+              เพิ่มนัดหมาย
             </button>
           )
         }
       />
       <div className="calendar-summary">
         <span>
-          <CalendarDays size={17} />
           {jobs.length} งานใน{mode === "week" ? "สัปดาห์" : "วัน"}นี้
         </span>
         <span className="calendar-legend">
@@ -165,43 +156,38 @@ export default function Bookings() {
               <button
                 aria-pressed={mode === "week"}
                 className={mode === "week" ? "active" : ""}
-                onClick={() => setMode("week")}
+                onClick={() => { setMode("week"); setAgenda(false); }}
               >
-                <CalendarRange size={15} />
                 สัปดาห์
               </button>
               <button
-                aria-pressed={mode === "day"}
-                className={mode === "day" ? "active" : ""}
-                onClick={() => setMode("day")}
+                aria-pressed={mode === "day" && !agenda}
+                className={mode === "day" && !agenda ? "active" : ""}
+                onClick={() => { setMode("day"); setAgenda(false); }}
               >
-                <CalendarDays size={15} />
                 วัน
               </button>
+              <button aria-pressed={agenda} className={agenda ? 'active' : ''} onClick={() => { setMode('day'); setAgenda(true); }}>รายการงาน</button>
             </div>
           </div>
         </div>
-        <div className="calendar-scroll">
+        {mode === 'week' && <div className="week-picker" aria-label="เลือกวันในสัปดาห์">{days.map(day => <button key={day.toISOString()} className={isSameDay(day, date) ? 'active' : ''} aria-pressed={isSameDay(day, date)} onClick={() => setDate(day)}>{dateText(day, 'EEE')}<strong>{dateText(day, 'd')}</strong></button>)}</div>}
+        {agenda && <div className="booking-agenda">{jobs.filter(job => isSameDay(new Date(job.start), date)).map(job => <button key={job.id} className="agenda-row" onClick={() => setDetail(job.id)}><span className="agenda-time">{dateText(job.start, 'HH:mm')}–{dateText(job.end, 'HH:mm')}</span><strong>{customer(job.customerId)}</strong><span>{bookingTypeLabels[job.type]} {state.technicians.find(tech => tech.id === job.technicianId)?.name}</span><span className={`badge ${job.status}`}>{bookingLabels[job.status]}</span></button>)}</div>}
+        <div className={`calendar-scroll ${agenda ? 'calendar-hidden' : ''}`}>
           <div
             className={`calendar-grid ${state.technicians.length === 1 ? "own-calendar" : ""}`}
           >
             <div className="calendar-columns" style={calendarStyle}>
               <div className="calendar-corner">
-                {mode === "week" ? "วัน / ช่าง" : "เวลา"}
+                เวลา
               </div>
               {state.technicians.map((tech) => (
                 <div className="technician-heading" key={tech.id}>
-                  <span
-                    className="tech-avatar"
-                    style={{ color: tech.color, background: `${tech.color}13` }}
-                  >
-                    <Wrench size={16} />
-                  </span>
                   <span>
                     <strong>{tech.name}</strong>
                     <small>
                       {
-                        jobs.filter((job) => job.technicianId === tech.id)
+                        jobs.filter((job) => job.technicianId === tech.id && isSameDay(new Date(job.start), date))
                           .length
                       }{" "}
                       งาน
@@ -210,59 +196,6 @@ export default function Bookings() {
                 </div>
               ))}
             </div>
-            {mode === "week" ? (
-              days.map((day) => (
-                <div
-                  className={`calendar-week-row ${isSameDay(day, today) ? "is-today" : ""}`}
-                  key={day.toISOString()}
-                  style={calendarStyle}
-                >
-                  <div className="calendar-day-label">
-                    <strong>{dateText(day, "d")}</strong>
-                    <span>{dateText(day, "EEE")}</span>
-                    {isSameDay(day, today) && <small>วันนี้</small>}
-                  </div>
-                  {state.technicians.map((tech) => (
-                    <div className="week-cell" key={tech.id}>
-                      {jobs
-                        .filter(
-                          (job) =>
-                            job.technicianId === tech.id &&
-                            isSameDay(day, new Date(job.start)),
-                        )
-                        .map((job) => (
-                          <button
-                            className={`job-block ${job.status}`}
-                            key={job.id}
-                            onClick={() => setDetail(job.id)}
-                            title={`${bookingTypeLabels[job.type]} · ${customer(job.customerId)}`}
-                          >
-                            <span className="job-time">
-                              {dateText(job.start, "HH:mm")}–
-                              {dateText(job.end, "HH:mm")}
-                            </span>
-                            <strong>{bookingTypeLabels[job.type]}</strong>
-                            <span>{customer(job.customerId)}</span>
-                            <small>{bookingLabels[job.status]}</small>
-                          </button>
-                        ))}
-                      {office && (
-                        <button
-                          className="add-slot"
-                          aria-label={`นัด ${tech.name} ${dateText(day)}`}
-                          title="เพิ่มนัดหมาย"
-                          onClick={() =>
-                            setEditing({ date: day, technicianId: tech.id })
-                          }
-                        >
-                          <Plus size={15} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ))
-            ) : (
               <div
                 className="day-grid"
                 style={{
@@ -270,6 +203,7 @@ export default function Bookings() {
                   height: `${(latest - earliest) * 60}px`,
                 }}
               >
+                {isSameDay(date, today) && today.getHours() >= earliest && today.getHours() < latest && <div className="current-time-rule" style={{ top: `${(today.getHours() - earliest) * 60 + today.getMinutes()}px` }}><span>ขณะนี้ {dateText(today, 'HH:mm')}</span></div>}
                 <div className="time-column">
                   {Array.from({ length: latest - earliest }, (_, index) => (
                     <span key={index} style={{ top: `${index * 60}px` }}>
@@ -279,6 +213,7 @@ export default function Bookings() {
                 </div>
                 {state.technicians.map((tech) => (
                   <div className="day-technician" key={tech.id}>
+                    <div className="time-rules" aria-hidden="true">{Array.from({ length: (latest - earliest) * 2 }, (_, index) => <i key={index} className={index % 2 === 0 ? 'hour-rule' : 'half-hour-rule'} style={{ top: `${index * 30}px` }} />)}</div>
                     {office && (
                       <button
                         className="add-day-job"
@@ -292,7 +227,7 @@ export default function Bookings() {
                       </button>
                     )}
                     {jobs
-                      .filter((job) => job.technicianId === tech.id)
+                      .filter((job) => job.technicianId === tech.id && isSameDay(new Date(job.start), date))
                       .map((job) => {
                         const startTime = new Date(job.start),
                           minutes =
@@ -305,11 +240,11 @@ export default function Bookings() {
                         return (
                           <button
                             className={`job-block day-job ${job.status}`}
+                            data-compact={duration < 90}
                             key={job.id}
                             style={{
                               top: `${minutes}px`,
                               height: `${Math.max(2, duration)}px`,
-                              borderLeftColor: tech.color,
                             }}
                             onClick={() => setDetail(job.id)}
                             title={`${dateText(job.start, "HH:mm")}–${dateText(job.end, "HH:mm")} ${bookingTypeLabels[job.type]} ${customer(job.customerId)}`}
@@ -318,8 +253,8 @@ export default function Bookings() {
                               {dateText(job.start, "HH:mm")}–
                               {dateText(job.end, "HH:mm")}
                             </span>
-                            <strong>{bookingTypeLabels[job.type]}</strong>
-                            <span>{customer(job.customerId)}</span>
+                            <strong>{customer(job.customerId)}</strong>
+                            <span>{bookingTypeLabels[job.type]}</span>
                             <small>{bookingLabels[job.status]}</small>
                           </button>
                         );
@@ -327,7 +262,6 @@ export default function Bookings() {
                   </div>
                 ))}
               </div>
-            )}
           </div>
         </div>
         {jobs.length === 0 && (
@@ -380,7 +314,7 @@ export function BookingDetail({
         : null;
   return (
     <Modal
-      title={`${bookingTypeLabels[job.type]} · ${job.id}`}
+      title="รายละเอียดนัดหมาย"
       onClose={() => {
         if (!busy) onClose();
       }}
@@ -390,21 +324,18 @@ export function BookingDetail({
           {bookingLabels[job.status]}
         </span>
         <h3>{customer.name}</h3>
+        <p>{bookingTypeLabels[job.type]}</p>
         <p>
-          <Clock3 size={17} />
-          {dateText(job.start, "d MMM yyyy")} · {dateText(job.start, "HH:mm")}–
+          {dateText(job.start, "d MMM yyyy")} เวลา {dateText(job.start, "HH:mm")}–
           {dateText(job.end, "HH:mm")}
         </p>
         <p>
-          <Wrench size={17} />
           {tech.name}
         </p>
         <p>
-          <Phone size={17} />
           <a href={`tel:${customer.phone}`}>{customer.phone}</a>
         </p>
         <p>
-          <MapPin size={17} />
           {customer.address}
         </p>
         {job.orderId && (
@@ -422,8 +353,7 @@ export function BookingDetail({
             disabled={busy}
             onClick={() => onEdit(job)}
           >
-            <Pencil size={16} />
-            แก้ไข / เลื่อนนัด
+            แก้ไขนัดหมาย
           </button>
         )}
         {next && (
@@ -437,8 +367,7 @@ export function BookingDetail({
               )
             }
           >
-            {next === "working" ? "เริ่มงาน" : "ปิดงาน"}
-            <ArrowRight size={16} />
+            {next === "working" ? "เริ่มงาน" : "บันทึกงานเสร็จ"}
           </button>
         )}
       </div>
@@ -462,7 +391,7 @@ function BookingForm({
     end = existing ? new Date(existing.end) : addHours(start, 2);
   return (
     <Modal
-      title={existing ? "แก้ไขงาน / เลื่อนนัด" : "นัดหมายงานใหม่"}
+      title={existing ? "แก้ไขนัดหมายและเวลา" : "เพิ่มนัดหมาย"}
       onClose={() => {
         if (!busy) onClose();
       }}
@@ -506,7 +435,7 @@ function BookingForm({
             <option value="">เลือกลูกค้า</option>
             {state!.customers.map((customer) => (
               <option key={customer.id} value={customer.id}>
-                {customer.name} · {customer.phone}
+                {customer.name} โทร {customer.phone}
               </option>
             ))}
           </select>
@@ -591,7 +520,7 @@ function BookingForm({
             disabled={busy}
             onClick={onClose}
           >
-            กลับ
+            ยกเลิกการแก้ไข
           </button>
           <button className="primary" disabled={busy}>
             {busy ? "กำลังบันทึก…" : "บันทึกนัดหมาย"}

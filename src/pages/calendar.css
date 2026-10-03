@@ -1,3 +1,19 @@
+.calendar-hidden{display:none}
+.current-time-rule{position:absolute;left:0;right:0;z-index:3;border-top:1px solid var(--accent);pointer-events:none}
+.current-time-rule span{position:absolute;right:var(--space-2);bottom:0;font-size:var(--text-meta);line-height:var(--line-meta);color:var(--accent);background:var(--surface);padding:0 var(--space-1)}
+.day-job[data-compact="true"]{padding:var(--space-1)}
+.day-job[data-compact="true"]>span:not(.job-time),.day-job[data-compact="true"] small{display:none}
+.week-picker{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid var(--border)}
+.week-picker button{background:var(--surface);border:0;border-bottom:2px solid transparent;padding:var(--space-2);color:var(--muted);font-size:var(--text-meta)}
+.week-picker button strong{display:block;font-size:var(--text-body);font-weight:400}
+.week-picker button.active{border-bottom-color:var(--accent);color:var(--accent);background:var(--positive-fill)}
+.booking-agenda{border-top:1px solid var(--border)}
+.agenda-row{display:grid;grid-template-columns:110px minmax(0,1fr) 120px;align-items:center;gap:var(--space-2) var(--space-4);width:100%;text-align:left;background:var(--surface);border:0;border-bottom:1px solid var(--border);padding:var(--space-4);color:var(--ink)}
+.agenda-time{font-variant-numeric:tabular-nums;grid-row:1/3;align-self:start;font-size:var(--text-compact)}
+.agenda-row strong{font-size:var(--text-body);font-weight:600;line-height:var(--line-body)}
+.agenda-row>span:nth-child(3){color:var(--muted);grid-column:2;font-size:var(--text-compact)}
+.agenda-row .badge{grid-column:3;grid-row:1/3;justify-self:end}
+@media(max-width:700px){.agenda-row{grid-template-columns:100px minmax(0,1fr);gap:var(--space-2) var(--space-3)}.agenda-row .badge{grid-column:2;grid-row:auto;justify-self:start}.calendar-legend{display:none !important}}
 .calendar-summary {
   display: flex;
   justify-content: space-between;
@@ -79,7 +95,7 @@
   display: flex;
   align-items: center;
   padding: var(--space-1);
-  background: var(--canvas);
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
   flex-shrink: 0;
@@ -92,7 +108,7 @@
   color: var(--ink);
   font-size: var(--text-meta);
   border: 0;
-  background: none;
+  background: transparent;
   border-radius: var(--radius-control);
   line-height: var(--line-meta);
 }
@@ -206,8 +222,8 @@
 .job-block {
   text-align: left;
   border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
-  background: var(--canvas);
+  border-left: 3px solid var(--waiting);
+  background: var(--surface);
   border-radius: var(--radius-small);
   padding: var(--space-2) var(--space-3);
   color: var(--ink);
@@ -243,16 +259,16 @@
   line-height: var(--line-meta);
 }
 .job-block.working {
-  background: var(--progress-fill);
+  background: var(--surface);
   border-color: var(--border);
-  border-left-color: var(--border);
-  color: var(--progress);
+  border-left-color: var(--progress);
+  color: var(--ink);
 }
 .job-block.done {
-  background: var(--positive-fill);
+  background: var(--surface);
   border-color: var(--border);
-  border-left-color: var(--border);
-  color: var(--positive);
+  border-left-color: var(--positive);
+  color: var(--ink);
 }
 .job-time {
   font-size: var(--text-meta);
@@ -294,13 +310,7 @@
 .day-technician {
   position: relative;
   border-left: 1px solid var(--border);
-  background: repeating-linear-gradient(
-    to bottom,
-    var(--surface) 0,
-    var(--surface) 59px,
-    var(--surface) 59px,
-    var(--surface) 60px
-  );
+  background: var(--surface);
 }
 .day-job {
   position: absolute;
@@ -398,3 +408,11 @@
     min-height: 136px;
   }
 }
+.time-rules{position:absolute;inset:0;pointer-events:none}
+.time-rules i{position:absolute;left:0;right:0;border-top:1px solid var(--border)}
+.time-rules .half-hour-rule{border-top-style:dotted}
+.calendar-columns{position:sticky;top:0;z-index:4}
+.calendar-scroll{max-height:760px}
+.calendar-toolbar{padding:var(--space-4) 0}
+.technician-heading{padding:var(--space-4)}
+@media(max-width:700px){.calendar-summary{display:none}.calendar-toolbar{padding:var(--space-3)}.calendar-navigation strong{display:none}.calendar-controls input{min-width:120px}.agenda-row{padding:var(--space-3)}.calendar-controls .segmented{min-height:44px}}

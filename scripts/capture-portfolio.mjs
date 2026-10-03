@@ -131,15 +131,17 @@ try {
     await close();
 
     await route('bookings');
+    if (device.name === 'mobile') await capture('15-booking-agenda', 'Today agenda with customer, technician and status');
+    await page.getByRole('button', { name: 'สัปดาห์', exact: true }).click();
     await capture('15-booking-week', 'Weekly calendar with four technicians', true);
     await page.getByRole('button', { name: 'วัน', exact: true }).click();
     await capture('16-booking-day', 'Daily technician calendar', true);
     await page.locator('.day-job').first().click();
     await capture('17-job-detail', 'Technician job and customer contact');
-    await page.getByRole('button', { name: 'แก้ไข / เลื่อนนัด', exact: true }).click();
+    await page.getByRole('button', { name: 'แก้ไขนัดหมาย', exact: true }).click();
     await capture('18-reschedule-job', 'Edit and reschedule technician booking');
     await close();
-    await page.getByRole('button', { name: 'นัดหมายงานใหม่', exact: true }).click();
+    await page.getByRole('button', { name: 'เพิ่มนัดหมาย', exact: true }).click();
     await page.getByLabel('ลูกค้า', { exact: true }).selectOption('customer-1');
     await page.getByLabel('หมายเหตุ', { exact: true }).fill('ติดตั้งแอร์ห้องนอนชั้น 2 โทรแจ้งก่อนถึง 30 นาที');
     await capture('19-booking-form', 'Create installation, cleaning or repair appointment');

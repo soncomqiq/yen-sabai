@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { X } from "lucide-react";
+import { useShop } from './DataProvider';
 export function Modal({
   title,
   onClose,
@@ -12,7 +13,9 @@ export function Modal({
   wide?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null),
+    errorRef = useRef<HTMLDivElement>(null),
     id = useId();
+  const { actionError, clearActionError } = useShop();
   useEffect(() => {
     const dialog = ref.current!;
     dialog.showModal();
@@ -20,9 +23,12 @@ export function Modal({
     document.body.style.overflow = "hidden";
     return () => {
       dialog.close();
+      clearActionError();
       document.body.style.overflow = overflow;
     };
   }, []);
+  const isActive = ref.current === Array.from(document.querySelectorAll('dialog[open]')).at(-1);
+  useEffect(() => { if (actionError && isActive) { errorRef.current?.focus(); errorRef.current?.scrollIntoView({ block: 'nearest' }); } }, [actionError, isActive]);
   return (
     <dialog
       ref={ref}
@@ -43,7 +49,7 @@ export function Modal({
           <X />
         </button>
       </div>
-      <div className="modal-body">{children}</div>
+      <div className="modal-body">{actionError && isActive && <div ref={errorRef} tabIndex={-1} className="error-message" role="alert"><strong>บันทึกไม่ได้</strong><p>{actionError}</p></div>}{children}</div>
     </dialog>
   );
 }
