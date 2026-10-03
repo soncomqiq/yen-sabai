@@ -1,0 +1,446 @@
+{
+  "capturedAt": "2026-10-03T08:43:53.124Z",
+  "fictionalData": true,
+  "files": [
+    {
+      "file": "desktop/01-login.png",
+      "title": "Login and role selection",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/02-dashboard.png",
+      "title": "Owner sales and operations dashboard",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/02-dashboard.png",
+      "title": "Owner sales and operations dashboard (full page)"
+    },
+    {
+      "file": "desktop/02-sales-report.png",
+      "title": "Owner sales report using existing calculations",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/02-sales-report.png",
+      "title": "Owner sales report using existing calculations (full page)"
+    },
+    {
+      "file": "desktop/03-products.png",
+      "title": "Products and stock management",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/03-products.png",
+      "title": "Products and stock management (full page)"
+    },
+    {
+      "file": "desktop/04-low-stock.png",
+      "title": "Low stock alerts and filtering",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/04-low-stock.png",
+      "title": "Low stock alerts and filtering (full page)"
+    },
+    {
+      "file": "desktop/05-product-form.png",
+      "title": "Validated add product form",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/06-stock-in.png",
+      "title": "Stock receipt",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/07-stock-out.png",
+      "title": "Stock issue",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/08-stock-history.png",
+      "title": "Stock movement history",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/09-orders.png",
+      "title": "Orders and status filters",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/09-orders.png",
+      "title": "Orders and status filters (full page)"
+    },
+    {
+      "file": "desktop/10-orders-awaiting-payment.png",
+      "title": "Orders awaiting payment",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/11-order-detail.png",
+      "title": "Order detail and status timeline",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/12-cancel-confirmation.png",
+      "title": "Cancellation confirmation and stock restoration",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/13-quotation-preview.png",
+      "title": "Thai quotation preview and PDF download",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "documents/quotation-a4-desktop.png",
+      "title": "Thai quotation A4",
+      "width": 1588,
+      "height": 2246
+    },
+    {
+      "file": "desktop/14-create-order.png",
+      "title": "Multi-product order creation",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/15-booking-week.png",
+      "title": "Weekly calendar with four technicians",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/15-booking-week.png",
+      "title": "Weekly calendar with four technicians (full page)"
+    },
+    {
+      "file": "desktop/16-booking-day.png",
+      "title": "Daily technician calendar",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/16-booking-day.png",
+      "title": "Daily technician calendar (full page)"
+    },
+    {
+      "file": "desktop/17-job-detail.png",
+      "title": "Technician job and customer contact",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/18-reschedule-job.png",
+      "title": "Edit and reschedule technician booking",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/19-booking-form.png",
+      "title": "Create installation, cleaning or repair appointment",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/20-booking-conflict.png",
+      "title": "Double-booking protection and explanatory message",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/21-customers.png",
+      "title": "Customer directory",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/21-customers.png",
+      "title": "Customer directory (full page)"
+    },
+    {
+      "file": "desktop/22-customer-purchases.png",
+      "title": "Customer profile and purchase history",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/23-customer-services.png",
+      "title": "Customer service history",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/23-customer-booking.png",
+      "title": "Booking from customer profile with customer preselected",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "desktop/24-admin-dashboard.png",
+      "title": "Admin dashboard without sales totals",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/24-admin-dashboard.png",
+      "title": "Admin dashboard without sales totals (full page)"
+    },
+    {
+      "file": "desktop/25-technician-jobs.png",
+      "title": "Technician own jobs only",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "full-page/desktop/25-technician-jobs.png",
+      "title": "Technician own jobs only (full page)"
+    },
+    {
+      "file": "desktop/26-technician-job-detail.png",
+      "title": "Technician job status and customer contact without prices",
+      "width": 2880,
+      "height": 2000
+    },
+    {
+      "file": "mobile/01-login.png",
+      "title": "Login and role selection",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/02-dashboard.png",
+      "title": "Owner sales and operations dashboard",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/02-dashboard.png",
+      "title": "Owner sales and operations dashboard (full page)"
+    },
+    {
+      "file": "mobile/02-sales-report.png",
+      "title": "Owner sales report using existing calculations",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/02-sales-report.png",
+      "title": "Owner sales report using existing calculations (full page)"
+    },
+    {
+      "file": "mobile/03-products.png",
+      "title": "Products and stock management",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/03-products.png",
+      "title": "Products and stock management (full page)"
+    },
+    {
+      "file": "mobile/04-low-stock.png",
+      "title": "Low stock alerts and filtering",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/04-low-stock.png",
+      "title": "Low stock alerts and filtering (full page)"
+    },
+    {
+      "file": "mobile/05-product-form.png",
+      "title": "Validated add product form",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/06-stock-in.png",
+      "title": "Stock receipt",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/07-stock-out.png",
+      "title": "Stock issue",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/08-stock-history.png",
+      "title": "Stock movement history",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/09-orders.png",
+      "title": "Orders and status filters",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/09-orders.png",
+      "title": "Orders and status filters (full page)"
+    },
+    {
+      "file": "mobile/10-orders-awaiting-payment.png",
+      "title": "Orders awaiting payment",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/11-order-detail.png",
+      "title": "Order detail and status timeline",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/12-cancel-confirmation.png",
+      "title": "Cancellation confirmation and stock restoration",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/13-quotation-preview.png",
+      "title": "Thai quotation preview and PDF download",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "documents/quotation-a4-mobile.png",
+      "title": "Thai quotation A4",
+      "width": 1588,
+      "height": 2246
+    },
+    {
+      "file": "mobile/14-create-order.png",
+      "title": "Multi-product order creation",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/15-booking-agenda.png",
+      "title": "Today agenda with customer, technician and status",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/15-booking-week.png",
+      "title": "Weekly calendar with four technicians",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/15-booking-week.png",
+      "title": "Weekly calendar with four technicians (full page)"
+    },
+    {
+      "file": "mobile/16-booking-day.png",
+      "title": "Daily technician calendar",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/16-booking-day.png",
+      "title": "Daily technician calendar (full page)"
+    },
+    {
+      "file": "mobile/17-job-detail.png",
+      "title": "Technician job and customer contact",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/18-reschedule-job.png",
+      "title": "Edit and reschedule technician booking",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/19-booking-form.png",
+      "title": "Create installation, cleaning or repair appointment",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/20-booking-conflict.png",
+      "title": "Double-booking protection and explanatory message",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/21-customers.png",
+      "title": "Customer directory",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/21-customers.png",
+      "title": "Customer directory (full page)"
+    },
+    {
+      "file": "mobile/22-customer-purchases.png",
+      "title": "Customer profile and purchase history",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/23-customer-services.png",
+      "title": "Customer service history",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/23-customer-booking.png",
+      "title": "Booking from customer profile with customer preselected",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/24-admin-dashboard.png",
+      "title": "Admin dashboard without sales totals",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/24-admin-dashboard.png",
+      "title": "Admin dashboard without sales totals (full page)"
+    },
+    {
+      "file": "mobile/25-technician-jobs.png",
+      "title": "Technician own jobs only",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "full-page/mobile/25-technician-jobs.png",
+      "title": "Technician own jobs only (full page)"
+    },
+    {
+      "file": "mobile/26-technician-job-detail.png",
+      "title": "Technician job status and customer contact without prices",
+      "width": 780,
+      "height": 1688
+    },
+    {
+      "file": "mobile/27-mobile-navigation.png",
+      "title": "Owner mobile navigation with all shop modules",
+      "width": 780,
+      "height": 1688
+    }
+  ]
+}
