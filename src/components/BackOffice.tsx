@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react";
 import {
   HashRouter,
   NavLink,
@@ -16,8 +16,6 @@ import {
   Users,
   Menu,
   X,
-  ArrowRight,
-  ShieldCheck,
 } from "lucide-react";
 import type { Role, User } from "../domain/types";
 import { roleLabels } from "../domain/types";
@@ -66,33 +64,12 @@ function Login({ onLogin }: { onLogin: (user: User) => void }) {
       <div className="login-grid">
         <section className="login-brand">
           <div className="brand-mark">
-            <AirVent size={30} />
+            <AirVent size={28} />
           </div>
-          <p className="eyebrow">YENSABAI · BACK OFFICE</p>
-          <h1>
-            ร้านเย็นสบาย
-            <br />
-            <span>แอร์แอนด์เซอร์วิส</span>
-          </h1>
-          <p>
-            ดูแลร้านให้ราบรื่น
-            <br />
-            ดูแลทุกความเย็นให้สบายใจ
-          </p>
-          <img
-            src={`${import.meta.env.BASE_URL}shop-scene.png`}
-            alt="เครื่องปรับอากาศและอุปกรณ์บริการของร้าน"
-            className="shop-scene"
-          />
-          <div className="login-foot">งานขาย · สินค้า · ทีมช่าง</div>
+          <div><h1>ร้านเย็นสบาย</h1><p className="muted">แอร์แอนด์เซอร์วิส</p></div>
         </section>
         <section className="login-form">
-          <div className="login-heading">
-            <ShieldCheck />
-            <span>พื้นที่จัดการร้าน</span>
-          </div>
-          <h2>ยินดีต้อนรับกลับ</h2>
-          <p className="muted">เข้าสู่ระบบร้านเย็นสบาย</p>
+          <h2>เข้าสู่ระบบ</h2>
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -162,10 +139,10 @@ function Login({ onLogin }: { onLogin: (user: User) => void }) {
               </p>
             )}
             <button className="primary full" type="submit">
-              เข้าสู่ระบบ <ArrowRight size={18} />
+              เข้าสู่ระบบ
             </button>
           </form>
-          <p className="login-note">บัญชีสาธิต · ไม่มีการเชื่อมต่อระบบจริง</p>
+          <p className="login-note">บัญชีสาธิต ข้อมูลทั้งหมดเป็นข้อมูลสมมติ</p>
         </section>
       </div>
     </div>
@@ -174,6 +151,24 @@ function Login({ onLogin }: { onLogin: (user: User) => void }) {
 function Shell({ children }: { children: ReactNode }) {
   const { user, logout } = useSession();
   const [open, setOpen] = useState(false);
+  const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 700px)').matches);
+  const navRef = useRef<HTMLElement>(null), menuRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { const media = window.matchMedia('(max-width: 700px)'); const resize = () => setMobile(media.matches); media.addEventListener('change', resize); return () => media.removeEventListener('change', resize); }, []);
+  useEffect(() => {
+    if (!open || !mobile) return;
+    const navigation = navRef.current!;
+    const controls = () => Array.from(navigation.querySelectorAll<HTMLElement>('a,button')).filter(element => element.getClientRects().length > 0);
+    controls()[0]?.focus();
+    function keyboard(event: KeyboardEvent) {
+      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); return; }
+      if (event.key !== 'Tab') return;
+      const elements = controls(), first = elements[0], last = elements.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    }
+    navigation.addEventListener('keydown', keyboard);
+    return () => { navigation.removeEventListener('keydown', keyboard); menuRef.current?.focus(); };
+  }, [open, mobile]);
   const location = useLocation();
   const title =
     navItems.find((item) => location.pathname === `/${item.path}`)?.label ??
@@ -189,7 +184,7 @@ function Shell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
           />
         )}
-        <aside className={`sidebar ${open ? "open" : ""}`}>
+        <aside ref={navRef} id="shop-navigation" className={`sidebar ${open ? "open" : ""}`} inert={mobile && !open} role={mobile && open ? 'dialog' : undefined} aria-modal={mobile && open ? true : undefined} aria-label="เมนูร้าน">
           <NavLink
             to={user.role === "technician" ? "/bookings" : "/dashboard"}
             className="brand"
@@ -236,8 +231,11 @@ function Shell({ children }: { children: ReactNode }) {
           <header className="app-header">
             <div className="header-left">
               <button
+                ref={menuRef}
                 className="icon-button mobile-menu"
                 aria-label="เปิดเมนู"
+                aria-expanded={open}
+                aria-controls="shop-navigation"
                 onClick={() => setOpen(true)}
               >
                 <Menu />

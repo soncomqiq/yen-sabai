@@ -741,9 +741,10 @@ a {
   text-decoration: none;
 }
 button:focus-visible,
-a:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 h1,
 h2,
@@ -754,18 +755,21 @@ p {
 h1 {
   font-size: var(--text-page);
   font-weight: 600;
-  line-height: 1.7;
+  line-height: var(--line-page);
 }
 h2 {
   font-size: var(--text-section);
   font-weight: 600;
+  line-height: var(--line-section);
 }
 h3 {
   font-size: var(--text-body);
   font-weight: 600;
+  line-height: var(--line-body);
 }
 small {
   font-size: var(--text-meta);
+  line-height: var(--line-meta);
 }
 .muted {
   color: var(--muted);
@@ -1089,28 +1093,30 @@ small {
 }
 .login-screen {
   min-height: 100dvh;
-  background: white;
+  background: var(--canvas);
 }
 .login-grid {
-  min-height: calc(100dvh - 29px);
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  max-width: 1600px;
-  margin: auto;
+  display: block;
+  width: min(440px, calc(100% - 32px));
+  margin: var(--space-12) auto;
 }
 .login-brand {
   background: var(--canvas);
-  padding: var(--space-12) 12% var(--space-8);
+  padding: 0 0 var(--space-8);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
   position: relative;
   overflow: hidden;
 }
+.login-brand .brand-mark{background:transparent;color:var(--accent)}
 .login-brand .eyebrow {
   margin-top: var(--space-8);
   margin-bottom: var(--space-4);
   color: var(--ink);
 }
 .login-brand h1 {
-  font-size: var(--text-page);
+  font-size: var(--text-section);
   color: var(--ink);
 }
 .login-brand h1 span {
@@ -1137,10 +1143,10 @@ small {
 }
 .login-form {
   align-self: center;
-  padding: var(--space-12);
-  max-width: 510px;
+  padding: 0;
+  max-width: none;
   width: 100%;
-  margin: auto;
+  margin: 0;
 }
 .login-heading {
   display: flex;
@@ -1179,6 +1185,7 @@ textarea {
   padding: var(--space-2) var(--space-3);
   color: var(--ink);
   min-height: 42px;
+  font-weight: 400;
 }
 input:focus,
 select:focus,
@@ -1266,6 +1273,7 @@ legend {
   * {
     animation: none !important;
     scroll-behavior: auto !important;
+    transition: none !important;
   }
 }
 @media (max-width: 1000px) {
@@ -1288,13 +1296,13 @@ legend {
     font-size: var(--text-section);
   }
   .login-brand {
-    padding: var(--space-12) 10%;
+    padding: 0 0 var(--space-8);
   }
   .login-form {
-    padding: var(--space-8);
+    padding: 0;
   }
   .login-brand h1 {
-    font-size: var(--text-page);
+    font-size: var(--text-section);
   }
   .login-brand h1 span {
     font-size: var(--text-section);
@@ -1302,7 +1310,7 @@ legend {
 }
 @media (max-width: 700px) {
   h1 {
-    font-size: var(--text-section);
+    font-size: var(--text-page);
   }
   .sidebar {
     position: fixed;
@@ -1366,7 +1374,7 @@ legend {
   }
   .heading-actions > button {
     flex: 1;
-    font-size: var(--text-meta);
+    font-size: var(--text-compact);
   }
   .app-footer {
     padding: var(--space-4);
@@ -1378,7 +1386,7 @@ legend {
     display: block;
   }
   .login-brand {
-    padding: var(--space-6);
+    padding: 0 0 var(--space-6);
   }
   .login-brand .brand-mark {
     width: 36px;
@@ -1390,7 +1398,7 @@ legend {
     margin-bottom: var(--space-2);
   }
   .login-brand h1 {
-    font-size: var(--text-page);
+    font-size: var(--text-section);
   }
   .login-brand h1 span {
     font-size: var(--text-section);
@@ -1401,7 +1409,7 @@ legend {
     display: none;
   }
   .login-form {
-    padding: var(--space-6) var(--space-6) var(--space-8);
+    padding: 0;
   }
   .login-form h2 {
     font-size: var(--text-section);
