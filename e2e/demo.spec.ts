@@ -198,7 +198,7 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByLabel("เหตุผล / เลขที่อ้างอิง", { exact: true })
     .fill("QA รับเข้า");
-  await page.getByRole("button", { name: "ยืนยันรายการ", exact: true }).click();
+  await page.getByRole("button", { name: "บันทึกรับเข้า", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("รับสินค้าเข้า");
   await page
     .getByRole("button", { name: "เบิกออก QA-001", exact: true })
@@ -207,14 +207,14 @@ test("product form, stock rules, order creation, status flow, cancellation and p
   await page
     .getByLabel("เหตุผล / เลขที่อ้างอิง", { exact: true })
     .fill("QA เบิก");
-  await page.getByRole("button", { name: "ยืนยันรายการ", exact: true }).click();
+  await page.getByRole("button", { name: "บันทึกเบิกออก", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("ไม่สามารถเบิก");
   expect(
     (await snapshot(page)).products.find((product) => product.sku === "QA-001")!
       .stock,
   ).toBe(5);
   await page.getByLabel("จำนวน (เครื่อง)", { exact: true }).fill("1");
-  await page.getByRole("button", { name: "ยืนยันรายการ", exact: true }).click();
+  await page.getByRole("button", { name: "บันทึกเบิกออก", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("เบิกสินค้าออก");
   await page
     .getByRole("button", { name: "ประวัติ QA-001", exact: true })

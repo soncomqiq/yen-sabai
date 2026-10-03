@@ -1,15 +1,8 @@
 import { useState } from "react";
 import {
-  Download,
-  Plus,
   Search,
   Pencil,
-  ArrowDownToLine,
-  ArrowUpFromLine,
   History,
-  Package,
-  AlertTriangle,
-  Boxes,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -88,58 +81,19 @@ export default function Products() {
     <>
       <PageHeading
         title="สินค้าและสต็อก"
-        subtitle="สินค้าเป็นระเบียบ พร้อมขาย พร้อมให้บริการ"
+        subtitle={low ? `สินค้าถึงจุดสั่งซื้อ ${lowCount} รายการ` : `สินค้าทั้งหมด ${state.products.length} รายการ`}
         actions={
           <>
             <button className="secondary" onClick={download}>
-              <Download size={17} />
               ส่งออก Excel
             </button>
             <button className="primary" onClick={() => setEditing("new")}>
-              <Plus size={17} />
               เพิ่มสินค้า
             </button>
           </>
         }
       />
-      <div className="stats-grid three">
-        <div className="stat-card">
-          <span className="stat-icon">
-            <Package />
-          </span>
-          <div>
-            <p>สินค้าทั้งหมด</p>
-            <strong>
-              {number(state.products.length)} <small>รายการ</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon blue">
-            <Boxes />
-          </span>
-          <div>
-            <p>สินค้าในสต็อก</p>
-            <strong>
-              {number(
-                state.products.reduce((sum, product) => sum + product.stock, 0),
-              )}{" "}
-              <small>หน่วย</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon amber">
-            <AlertTriangle />
-          </span>
-          <div>
-            <p>ถึงจุดสั่งซื้อ</p>
-            <strong>
-              {lowCount} <small>รายการ</small>
-            </strong>
-          </div>
-        </div>
-      </div>
+      <p className="list-summary">คงเหลือรวม {number(state.products.reduce((sum, product) => sum + product.stock, 0))} หน่วย <button className="text-link" onClick={() => { setLow(!low); setPage(1); }}>{low ? 'ดูสินค้าทั้งหมด' : `ถึงจุดสั่งซื้อ ${lowCount} รายการ`}</button></p>
       <section className="panel">
         <div className="list-toolbar">
           <div className="search-input">
@@ -222,7 +176,7 @@ export default function Products() {
                             <span>
                               <strong>{product.name}</strong>
                               <small>
-                                {product.sku} · {product.unit}
+                                {product.sku} หน่วย: {product.unit}
                               </small>
                             </span>
                           </div>
@@ -264,20 +218,20 @@ export default function Products() {
                               <Pencil />
                             </button>
                             <button
-                              className="icon-button"
+                              className="stock-action"
                               title="รับเข้า"
                               aria-label={`รับเข้า ${product.sku}`}
                               onClick={() => setStock({ product, mode: "in" })}
                             >
-                              <ArrowDownToLine />
+                              รับเข้า
                             </button>
                             <button
-                              className="icon-button"
+                              className="stock-action"
                               title="เบิกออก"
                               aria-label={`เบิกออก ${product.sku}`}
                               onClick={() => setStock({ product, mode: "out" })}
                             >
-                              <ArrowUpFromLine />
+                              เบิกออก
                             </button>
                             <button
                               className="icon-button"
@@ -360,7 +314,7 @@ export default function Products() {
           <div className="detail-summary">
             <strong>{stock.product.name}</strong>
             <p className="muted">
-              {stock.product.sku} · คงเหลือ {stock.product.stock}{" "}
+              {stock.product.sku} คงเหลือ {stock.product.stock}{" "}
               {stock.product.unit}
             </p>
           </div>
@@ -417,10 +371,10 @@ export default function Products() {
                 disabled={busy}
                 onClick={() => setStock(null)}
               >
-                กลับ
+                ยกเลิกการแก้ไข
               </button>
               <button className="primary" disabled={busy}>
-                {busy ? "กำลังบันทึก…" : "ยืนยันรายการ"}
+                {busy ? "กำลังบันทึก…" : stock.mode === 'in' ? 'บันทึกรับเข้า' : 'บันทึกเบิกออก'}
               </button>
             </div>
           </form>
@@ -428,13 +382,13 @@ export default function Products() {
       )}
       {history && (
         <Modal
-          title={`ประวัติสต็อก · ${history.sku}`}
+          title={`ประวัติสต็อก ${history.sku}`}
           onClose={() => setHistory(null)}
           wide
         >
           <p className="dialog-copy">{history.name}</p>
           <div className="table-scroll">
-            <table>
+            <table className="stock-history-table">
               <thead>
                 <tr>
                   <th>วันที่</th>
@@ -455,7 +409,7 @@ export default function Products() {
                       <td>{move.reason}</td>
                       <td>{move.orderId ?? "—"}</td>
                       <td
-                        className={`numeric ${move.delta > 0 ? "text-success" : "text-danger"}`}
+                        className={`numeric ${move.delta > 0 ? "text-success" : "stock-decrease"}`}
                       >
                         {move.delta > 0 ? "+" : ""}
                         {move.delta}
@@ -582,7 +536,7 @@ function ProductForm({
             disabled={busy}
             onClick={onClose}
           >
-            กลับ
+            ยกเลิกการแก้ไข
           </button>
           <button className="primary" disabled={busy}>
             {busy ? "กำลังบันทึก…" : "บันทึกสินค้า"}
