@@ -167,9 +167,13 @@ try {
     const customerName = await page.evaluate(id => JSON.parse(localStorage.getItem('yensabai-shop-v1')).customers.find(customer => customer.id === id).name, customerId);
     await page.getByRole('textbox', { name: 'ค้นหาลูกค้า', exact: true }).fill(customerName);
     await page.locator('.customer-name').first().click();
+    await page.getByRole('tab', { name: 'ประวัติซื้อสินค้า', exact: true }).click();
     await capture('22-customer-purchases', 'Customer profile and purchase history');
     await page.getByRole('tab', { name: 'ประวัติงานบริการ', exact: true }).click();
     await capture('23-customer-services', 'Customer service history');
+    await page.getByRole('button', { name: 'เพิ่มนัดหมาย', exact: true }).click();
+    await capture('23-customer-booking', 'Booking from customer profile with customer preselected');
+    await close();
     await close();
 
     await logout(); await login('แอดมิน');

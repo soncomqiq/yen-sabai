@@ -28,6 +28,7 @@ import "./calendar.css";
 interface NewJob {
   date: Date;
   technicianId?: string;
+  customerId?: string;
 }
 export default function Bookings() {
   const { state, user } = useShop();
@@ -374,7 +375,7 @@ export function BookingDetail({
     </Modal>
   );
 }
-function BookingForm({
+export function BookingForm({
   value,
   onClose,
 }: {
@@ -383,7 +384,7 @@ function BookingForm({
 }) {
   const { state, user, service, busy, run } = useShop(),
     existing = "id" in value ? value : null;
-  const [customer, setCustomer] = useState(existing?.customerId ?? ""),
+  const [customer, setCustomer] = useState(value.customerId ?? ""),
     [order, setOrder] = useState(existing?.orderId ?? "");
   const start = existing
       ? new Date(existing.start)

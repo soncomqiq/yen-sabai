@@ -1,15 +1,8 @@
 import { useState } from "react";
 import {
   Search,
-  Users,
-  Wrench,
-  UserCheck,
-  ArrowRight,
-  Phone,
-  MapPin,
   ChevronLeft,
   ChevronRight,
-  ShoppingBag,
 } from "lucide-react";
 import { useShop } from "../components/DataProvider";
 import { PageHeading, Skeleton, EmptyState } from "../components/BackOffice";
@@ -22,7 +15,7 @@ import {
 } from "../domain/types";
 import { dateText, money } from "../lib/format";
 import { OrderDetail } from "./Orders";
-import { BookingDetail } from "./Bookings";
+import { BookingDetail, BookingForm } from "./Bookings";
 import "./customers.css";
 
 export default function Customers() {
@@ -56,53 +49,8 @@ export default function Customers() {
     <>
       <PageHeading
         title="ลูกค้า"
-        subtitle="รายละเอียดการติดต่อ และทุกประวัติที่ร้านดูแล"
+        subtitle={`ลูกค้าทั้งหมด ${state.customers.length} ราย`}
       />
-      <div className="stats-grid three">
-        <div className="stat-card">
-          <span className="stat-icon">
-            <Users />
-          </span>
-          <div>
-            <p>ลูกค้าทั้งหมด</p>
-            <strong>
-              {state.customers.length}
-              <small> ราย</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon blue">
-            <UserCheck />
-          </span>
-          <div>
-            <p>ลูกค้าซื้อซ้ำ</p>
-            <strong>
-              {
-                state.customers.filter(
-                  (customer) => purchases(customer.id).length > 1,
-                ).length
-              }
-              <small> ราย</small>
-            </strong>
-          </div>
-        </div>
-        <div className="stat-card">
-          <span className="stat-icon amber">
-            <Wrench />
-          </span>
-          <div>
-            <p>ลูกค้าที่มีงานบริการ</p>
-            <strong>
-              {
-                state.customers.filter((customer) => jobs(customer.id).length)
-                  .length
-              }
-              <small> ราย</small>
-            </strong>
-          </div>
-        </div>
-      </div>
       <section className="panel">
         <div className="list-toolbar">
           <div className="search-input">
@@ -154,9 +102,6 @@ export default function Customers() {
                             className="customer-name"
                             onClick={() => setDetail(customer.id)}
                           >
-                            <span className="avatar">
-                              {customer.name.slice(0, 1)}
-                            </span>
                             <span>
                               <strong>{customer.name}</strong>
                               <small>
@@ -170,7 +115,6 @@ export default function Customers() {
                             className="phone-link"
                             href={`tel:${customer.phone}`}
                           >
-                            <Phone size={13} />
                             {customer.phone}
                           </a>
                         </td>
@@ -185,12 +129,12 @@ export default function Customers() {
                         </td>
                         <td>
                           <button
-                            className="icon-button"
+                            className="text-link"
                             aria-label={`รายละเอียด ${customer.name}`}
                             title="ดูประวัติลูกค้า"
                             onClick={() => setDetail(customer.id)}
                           >
-                            <ArrowRight />
+                            ดูประวัติ
                           </button>
                         </td>
                       </tr>
@@ -260,9 +204,11 @@ function CustomerDetail({
 }) {
   const { state } = useShop(),
     customer = state!.customers.find((customer) => customer.id === customerId)!;
-  const [tab, setTab] = useState<"purchase" | "service">("purchase"),
+  const [tab, setTab] = useState<"purchase" | "service">("service"),
+    [booking, setBooking] = useState(false),
     [order, setOrder] = useState<string | null>(null),
-    [job, setJob] = useState<string | null>(null);
+    [job, setJob] = useState<string | null>(null),
+    [today] = useState(() => new Date());
   const orders = state!.orders
       .filter((order) => order.customerId === customerId)
       .sort((left, right) => right.createdAt.localeCompare(left.createdAt)),
@@ -274,41 +220,24 @@ function CustomerDetail({
       ["paid", "fulfillment", "completed"].includes(order.status),
     )
     .reduce((sum, order) => sum + orderTotal(order), 0);
+  const nextJob = [...jobs].filter(job => job.status !== 'done' && new Date(job.start) >= today).sort((left, right) => left.start.localeCompare(right.start))[0];
+  const lastJob = jobs.find(job => job.status === 'done');
   return (
     <>
-      <Modal title="รายละเอียดลูกค้า" onClose={onClose} wide>
+      {!order && !job && !booking && <Modal title="รายละเอียดลูกค้า" onClose={onClose} wide>
         <div className="customer-profile">
-          <span className="avatar large">{customer.name.slice(0, 1)}</span>
           <div>
             <h2>{customer.name}</h2>
             <p>
-              <Phone size={14} />
               <a href={`tel:${customer.phone}`}>{customer.phone}</a>
             </p>
             <p>
-              <MapPin size={14} />
               {customer.address}
             </p>
           </div>
         </div>
-        <div className="customer-metrics">
-          <div>
-            <span>คำสั่งซื้อทั้งหมด</span>
-            <strong>
-              {orders.length} <small>รายการ</small>
-            </strong>
-          </div>
-          <div>
-            <span>งานบริการทั้งหมด</span>
-            <strong>
-              {jobs.length} <small>งาน</small>
-            </strong>
-          </div>
-          <div>
-            <span>ยอดซื้อที่ชำระแล้ว</span>
-            <strong>{money(total)}</strong>
-          </div>
-        </div>
+        <div className="customer-context"><section><h3>นัดถัดไป</h3>{nextJob ? <><p>{dateText(nextJob.start, 'd MMM yyyy HH:mm')}</p><p>{bookingTypeLabels[nextJob.type]} {state!.technicians.find(tech => tech.id === nextJob.technicianId)?.name}</p><button className="text-link" onClick={() => setJob(nextJob.id)}>ดูนัดหมาย</button></> : <p className="muted">ยังไม่มีนัดหมายครั้งถัดไป</p>}</section><section><h3>งานบริการล่าสุด</h3>{lastJob ? <><p>{dateText(lastJob.start, 'd MMM yyyy')}</p><p>{bookingTypeLabels[lastJob.type]} {state!.technicians.find(tech => tech.id === lastJob.technicianId)?.name}</p><button className="text-link" onClick={() => setJob(lastJob.id)}>ดูงานบริการ</button></> : <p className="muted">ยังไม่มีงานบริการที่เสร็จแล้ว</p>}</section></div>
+        <div className="profile-actions"><button className="secondary" onClick={() => setBooking(true)}>เพิ่มนัดหมาย</button></div>
         <div className="history-tabs" role="tablist" aria-label="ประวัติลูกค้า">
           <button
             role="tab"
@@ -318,7 +247,6 @@ function CustomerDetail({
             className={tab === "purchase" ? "active" : ""}
             onClick={() => setTab("purchase")}
           >
-            <ShoppingBag size={16} />
             ประวัติซื้อสินค้า
           </button>
           <button
@@ -329,7 +257,6 @@ function CustomerDetail({
             className={tab === "service" ? "active" : ""}
             onClick={() => setTab("service")}
           >
-            <Wrench size={16} />
             ประวัติงานบริการ
           </button>
         </div>
@@ -338,10 +265,11 @@ function CustomerDetail({
           id={tab === "purchase" ? "purchase-history" : "service-history"}
           aria-labelledby={tab === "purchase" ? "purchase-tab" : "service-tab"}
         >
+          {tab === 'purchase' && <p className="history-summary">คำสั่งซื้อ {orders.length} รายการ <span>ยอดซื้อที่ชำระแล้ว <strong className="numeric">{money(total)}</strong></span></p>}
           {tab === "purchase" ? (
             orders.length ? (
               <div className="table-scroll">
-                <table>
+                <table className="history-table purchase-history-table">
                   <thead>
                     <tr>
                       <th>เลขที่</th>
@@ -371,11 +299,11 @@ function CustomerDetail({
                         <td className="numeric">{money(orderTotal(order))}</td>
                         <td>
                           <button
-                            className="icon-button"
+                            className="text-link"
                             aria-label={`ดู ${order.id}`}
                             onClick={() => setOrder(order.id)}
                           >
-                            <ArrowRight />
+                            ดูคำสั่งซื้อ
                           </button>
                         </td>
                       </tr>
@@ -391,7 +319,7 @@ function CustomerDetail({
             )
           ) : jobs.length ? (
             <div className="table-scroll">
-              <table>
+              <table className="history-table service-history-table">
                 <thead>
                   <tr>
                     <th>ประเภทงาน</th>
@@ -420,11 +348,11 @@ function CustomerDetail({
                       </td>
                       <td>
                         <button
-                          className="icon-button"
+                          className="text-link"
                           aria-label={`ดู ${job.id}`}
                           onClick={() => setJob(job.id)}
                         >
-                          <ArrowRight />
+                          ดูงาน
                         </button>
                       </td>
                     </tr>
@@ -439,7 +367,8 @@ function CustomerDetail({
             />
           )}
         </div>
-      </Modal>
+      </Modal>}
+      {booking && <BookingForm value={{ date: today, customerId }} onClose={() => setBooking(false)} />}
       {order && <OrderDetail orderId={order} onClose={() => setOrder(null)} />}
       {job && <BookingDetail bookingId={job} onClose={() => setJob(null)} />}
     </>

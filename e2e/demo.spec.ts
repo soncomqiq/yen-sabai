@@ -434,6 +434,8 @@ test("customer purchase and service histories and empty history states", async (
   await login(page);
   await page.goto("./#/customers");
   await page.locator(".customer-name").first().click();
+  await expect(page.getByRole('tab', { name: 'ประวัติงานบริการ', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await page.getByRole('tab', { name: 'ประวัติซื้อสินค้า', exact: true }).click();
   await expect(page.getByRole("dialog")).toContainText("ยอดซื้อที่ชำระแล้ว");
   await expect(
     page.getByRole("tab", { name: "ประวัติซื้อสินค้า", exact: true }),
@@ -446,6 +448,11 @@ test("customer purchase and service histories and empty history states", async (
   ).toHaveAttribute("aria-selected", "true");
   await noOverflow(page);
   await page.screenshot({ path: info.outputPath("customer-detail.png") });
+  const profileName = await page.locator('.customer-profile h2').innerText();
+  const profileId = (await snapshot(page)).customers.find(customer => customer.name === profileName)!.id;
+  await page.getByRole('button', { name: 'เพิ่มนัดหมาย', exact: true }).click();
+  await expect(page.getByLabel('ลูกค้า', { exact: true })).toHaveValue(profileId);
+  await closeDialog(page);
   await closeDialog(page);
   const state = await snapshot(page),
     customer = state.customers.find(
@@ -457,6 +464,7 @@ test("customer purchase and service histories and empty history states", async (
       .getByRole("textbox", { name: "ค้นหาลูกค้า", exact: true })
       .fill(customer.name);
     await page.locator(".customer-name").click();
+    await page.getByRole('tab', { name: 'ประวัติซื้อสินค้า', exact: true }).click();
     await expect(
       page.getByRole("heading", {
         name: "ยังไม่มีประวัติซื้อสินค้า",
